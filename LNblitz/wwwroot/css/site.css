@@ -1,34 +1,95 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+/* Bootstrap modifications */
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  font-weight: 600;
+}
+a {
+  transition-duration: 0.2s;
+  transition-property: background, color;
+}
+
 a.navbar-brand {
   white-space: normal;
   text-align: center;
   word-break: break-all;
 }
 
-/* Provide sufficient contrast against white background */
-a {
-  color: #0366d6;
+a.navbar-brand img {
+  height: 45px;
+  margin-right: var(--btcpay-space-s);
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+.bg-dark {
+  background-color: var(--btcpay-bg-dark) !important;
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+.onion {
+  filter: invert();
 }
+
+.table-sm {
+  width: calc(100% + 1rem);
+  margin: 1.5rem -.5rem;
+  border-radius: 4px;
+  border-collapse: separate !important;
+  border-spacing: 0px !important;
+}
+
+.table-sm thead > tr {
+  height: 40px;
+}
+
+.table-sm thead th {
+  border-bottom: none;
+  border-top: none;
+  font-size: 1.0rem;
+}
+
+.table-sm th,
+.table-sm td {
+  padding: .5rem;
+}
+
+.navbar-nav > li.nav-item .nav-link,
+.navbar-nav > li.nav-item .nav-link .btn {
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--btcpay-header-color-link, var(--btcpay-color-neutral-100));
+}
+
+.navbar-nav > li.nav-item .nav-link {
+  border: 2px solid transparent;
+}
+
+.navbar-nav > li.nav-item .nav-link:focus,
+.navbar-nav > li.nav-item .nav-link:hover {
+  color: var(--btcpay-header-color-link-accent, var(--btcpay-color-white));
+}
+
+.navbar-nav > li.nav-item .nav-link.active,
+.navbar-nav > li.nav-item .nav-link.active:focus,
+.navbar-nav > li.nav-item .nav-link.active:hover {
+  color: var(--btcpay-header-color-link-active, var(--btcpay-color-white));
+}
+
+@media (min-width: 992px) {
+  .navbar-nav > li.nav-item .nav-link:focus,
+  .navbar-nav > li.nav-item .nav-link:hover {
+    border-bottom-color: var(--btcpay-header-color-link-accent);
+  }
+}
+
+
 
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
   font-size: 14px;
 }
+
 @media (min-width: 768px) {
   html {
     font-size: 16px;
@@ -62,6 +123,7 @@ body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
 }
+
 .footer {
   position: absolute;
   bottom: 0;
