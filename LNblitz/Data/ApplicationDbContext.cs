@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using LNblitz.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,5 +10,9 @@ namespace LNblitz.Data
             : base(options)
         {
         }
+
+        public DbSet<Wallet> Wallets { get; set; }
+
+        public DbSet<Transaction> Transactions { get; set; }
     }
 }
