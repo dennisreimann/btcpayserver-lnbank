@@ -17,22 +17,21 @@
     <meta name="theme-color" content="#ffffff">
 </head>
 <body>
-    <header class="btcpay-header">
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm mb-4">
+    <header class="btcpay-header mb-5">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="Index">
+                <a class="navbar-brand" asp-page="/Wallets/Index">
                     <img src="~/img/btcpay-logo.svg" alt="BTCPay Server" asp-append-version="true">
                     LNblitz
                 </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <partial name="_LoginPartial"/>
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="Index">Home</a>
+                            <a class="nav-link" asp-page="/Wallets/Index">Wallets</a>
                         </li>
                     </ul>
                 </div>
@@ -51,7 +50,6 @@
             @RenderBody()
         </main>
     </div>
-
     <footer class="btcpay-footer footer">
         <div class="container">
             &copy; 2020 - LNblitz
