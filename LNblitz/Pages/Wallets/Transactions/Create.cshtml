@@ -1,0 +1,37 @@
+@page "/Wallets/{walletId:int}/Transactions/Create"
+@model LNblitz.Pages.Wallets.Transactions.CreateModel
+
+@{
+    ViewData["Title"] = "Create a transaction";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Transaction.Description" class="control-label"></label>
+                <input asp-for="Transaction.Description" class="form-control" />
+                <span asp-validation-for="Transaction.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Transaction.Amount" class="control-label"></label>
+                <input asp-for="Transaction.Amount" class="form-control" />
+                <span asp-validation-for="Transaction.Amount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index" asp-route-walletId="@Model.Wallet.Id">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

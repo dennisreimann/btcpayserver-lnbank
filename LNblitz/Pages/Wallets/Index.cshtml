@@ -23,6 +23,7 @@
                         @Html.DisplayFor(modelItem => wallet.Name)
                     </td>
                     <td>
+                        <a asp-page="./Transactions/Index" asp-route-walletId="@wallet.Id">Transactions</a> |
                         <a asp-page="./Edit" asp-route-id="@wallet.Id">Edit</a> |
                         <a asp-page="./Details" asp-route-id="@wallet.Id">Details</a>
                     </td>

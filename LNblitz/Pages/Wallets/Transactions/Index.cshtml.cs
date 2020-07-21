@@ -1,39 +1,43 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using LNblitz.Data;
 using LNblitz.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
-namespace LNblitz.Pages.Wallets
+namespace LNblitz.Pages.Wallets.Transactions
 {
-    public class DetailsModel : PageModel
+    public class IndexModel : PageModel
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
         public Wallet Wallet { get; set; }
+        public IList<Transaction> Transactions { get; set; }
 
-        public DetailsModel(ApplicationDbContext context, UserManager<User> userManager)
+        public IndexModel(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int walletId)
         {
             var userId = _userManager.GetUserId(User);
             Wallet = await _context.Wallets
-                .Include(w => w.Transactions).AsNoTracking()
-                .FirstOrDefaultAsync(w => w.Id == id && w.UserId == userId);
+                .FirstOrDefaultAsync(w => w.Id == walletId && w.UserId == userId);
 
             if (Wallet == null)
             {
                 return NotFound();
             }
+
+            Transactions = await _context.Transactions
+                .Where(t => t.WalletId == walletId)
+                .ToListAsync();
+
             return Page();
         }
     }

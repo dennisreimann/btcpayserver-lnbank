@@ -75,6 +75,16 @@
       <_ContentIncludedByDefault Remove="Views\Shared\_ValidationScriptsPartial.cshtml" />
       <_ContentIncludedByDefault Remove="Views\_ViewImports.cshtml" />
       <_ContentIncludedByDefault Remove="Views\_ViewStart.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Wallets\Transactions\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Wallets\Transactions\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Wallets\Transactions\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Wallets\Transactions\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Wallets\Transactions\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Transactions\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Transactions\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Transactions\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Transactions\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Transactions\Index.cshtml" />
     </ItemGroup>
 
     <ItemGroup>

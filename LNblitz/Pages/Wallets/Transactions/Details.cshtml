@@ -1,0 +1,29 @@
+@page "/Wallets/{walletId:int}/Transactions/Details/{id:int}"
+@model LNblitz.Pages.Wallets.Transactions.DetailsModel
+
+@{
+    ViewData["Title"] = Model.Transaction.Description;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Transaction.Amount)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Transaction.Amount)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-walletId="@Model.Wallet.Id" asp-route-id="@Model.Transaction.Id">Edit</a> |
+    <a asp-page="./Delete" asp-route-walletId="@Model.Wallet.Id" asp-route-id="@Model.Transaction.Id">Delete</a> |
+    <a asp-page="./Index" asp-route-walletId="@Model.Wallet.Id">Back to List</a>
+</div>
+
+<p>
+    <a asp-page="./Create" asp-route-walletId="@Model.Wallet.Id">Send</a> |
+    <a asp-page="./Create" asp-route-walletId="@Model.Wallet.Id">Recive</a>
+</p>

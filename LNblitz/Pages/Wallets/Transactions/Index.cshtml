@@ -1,0 +1,40 @@
+@page "/Wallets/{walletId:int}/Transactions"
+@model LNblitz.Pages.Wallets.Transactions.IndexModel
+
+@{
+    ViewData["Title"] = "Your transactions";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (Model.Transactions.Count > 0)
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var transaction in Model.Transactions) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(t => transaction.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(t => transaction.Amount)
+                </td>
+                <td>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+<p>
+    <a asp-page="Create" asp-route-walletId="@Model.Wallet.Id">Send</a> |
+    <a asp-page="Create" asp-route-walletId="@Model.Wallet.Id">Recive</a>
+</p>
