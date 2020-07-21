@@ -12,7 +12,7 @@ namespace LNblitz.Models
         public string InvoiceKey { get; set; }
         public string ReadonlyKey { get; set; }
 
-        public IdentityUser User { get; set; }
-        public ICollection<Transaction> Transactions { get; set; }
+        public User User { get; set; }
+        public List<Transaction> Transactions { get; set; }
     }
 }
