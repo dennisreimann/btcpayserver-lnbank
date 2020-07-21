@@ -1,8 +1,37 @@
 @page
-@model LNblitz.Pages.Wallets.Index
+@model LNblitz.Pages.Wallets.IndexModel
 
 @{
-    ViewData["Title"] = "Wallets";
+    ViewData["Title"] = "Your wallets";
 }
 
-<h1>Your Wallets</h1>
+<h1>@ViewData["Title"]</h1>
+
+@if (Model.Wallets.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var wallet in Model.Wallets) {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => wallet.Name)
+                    </td>
+                    <td>
+                        <a asp-page="./Edit" asp-route-id="@wallet.Id">Edit</a> |
+                        <a asp-page="./Details" asp-route-id="@wallet.Id">Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<p>
+    <a asp-page="Create">Create a wallet</a>
+</p>
