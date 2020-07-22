@@ -1,62 +1,58 @@
 using System.Threading.Tasks;
-using LNblitz.Data;
-using LNblitz.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
+using LNblitz.Data.Queries;
+using LNblitz.Data.Services;
+using LNblitz.Models;
 
 namespace LNblitz.Pages.Wallets.Transactions
 {
     public class DeleteModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
-        public Wallet Wallet { get; set; }
+        private readonly WalletManager _walletManager;
+        public string WalletId { get; set; }
         public Transaction Transaction { get; set; }
 
-        public DeleteModel(ApplicationDbContext context, UserManager<User> userManager)
+        public DeleteModel(UserManager<User> userManager, WalletManager walletManager)
         {
-            _context = context;
             _userManager = userManager;
+            _walletManager = walletManager;
         }
 
-        public async Task<IActionResult> OnGetAsync(int walletId, int id)
+        public async Task<IActionResult> OnGetAsync(string walletId, string transactionId)
         {
             var userId = _userManager.GetUserId(User);
-            Transaction = await _context.Transactions
-                .FirstOrDefaultAsync(t => t.Id == id && t.WalletId == walletId);
-
-            if (Transaction == null)
+            WalletId = walletId;
+            Transaction = await _walletManager.GetTransaction(new TransactionQuery
             {
-                return NotFound();
-            }
+                UserId = userId,
+                WalletId = walletId,
+                TransactionId = transactionId
+            });
+
+            if (Transaction == null) return NotFound();
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int walletId, int id)
+        public async Task<IActionResult> OnPostAsync(string walletId, string transactionId)
         {
             var userId = _userManager.GetUserId(User);
-            Wallet = await _context.Wallets
-                .FirstOrDefaultAsync(w => w.Id == walletId && w.UserId == userId);
-
-            if (Wallet == null)
+            WalletId = walletId;
+            Transaction = await _walletManager.GetTransaction(new TransactionQuery
             {
-                return NotFound();
-            }
+                UserId = userId,
+                WalletId = walletId,
+                TransactionId = transactionId
+            });
 
-            Transaction = await _context.Transactions
-                .FirstOrDefaultAsync(t => t.Id == id && t.WalletId == Wallet.Id);
+            if (Transaction == null) return NotFound();
 
-            if (Transaction == null)
-            {
-                return NotFound();
-            }
+            await _walletManager.RemoveTransaction(Transaction);
 
-            _context.Transactions.Remove(Transaction);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index", new { walletId = Wallet.Id });
+            return RedirectToPage("./Index", new { walletId });
         }
     }
 }

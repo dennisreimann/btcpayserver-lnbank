@@ -1,4 +1,4 @@
-@page "/Wallets/{walletId:int}/Transactions/Delete/{id:int}"
+@page "/Wallets/{walletId}/Transactions/Delete/{transactionId}"
 @model LNblitz.Pages.Wallets.Transactions.DeleteModel
 
 @{
@@ -13,4 +13,4 @@
     <input type="submit" value="Delete" class="btn btn-danger" />
 </form>
 
-<a asp-page="./Index" asp-route-walletId="@Model.Wallet.Id">Back to List</a>
+<a asp-page="./Index" asp-route-walletId="@Model.WalletId">Back to List</a>

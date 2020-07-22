@@ -1,54 +1,51 @@
 using System.Threading.Tasks;
-using LNblitz.Data;
-using LNblitz.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
+using LNblitz.Data.Queries;
+using LNblitz.Data.Services;
+using LNblitz.Models;
 
 namespace LNblitz.Pages.Wallets.Transactions
 {
     public class CreateModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly WalletManager _walletManager;
         public Wallet Wallet { get; set; }
         public Transaction Transaction { get; set; }
 
-        public CreateModel(ApplicationDbContext context, UserManager<User> userManager)
+        public CreateModel(UserManager<User> userManager, WalletManager walletManager)
         {
-            _context = context;
             _userManager = userManager;
+            _walletManager = walletManager;
         }
 
-        public async Task<IActionResult> OnGet(int walletId)
+        public async Task<IActionResult> OnGet(string walletId)
         {
             var userId = _userManager.GetUserId(User);
-            Wallet = await _context.Wallets
-                .FirstOrDefaultAsync(w => w.Id == walletId && w.UserId == userId);
-
-            if (Wallet == null)
+            Wallet = await _walletManager.GetWallet(new WalletQuery
             {
-                return NotFound();
-            }
+                UserId = userId,
+                WalletId = walletId
+            });
+
+            if (Wallet == null) return NotFound();
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int walletId)
+        public async Task<IActionResult> OnPostAsync(string walletId)
         {
             var userId = _userManager.GetUserId(User);
-            Wallet = await _context.Wallets
-                .FirstOrDefaultAsync(w => w.Id == walletId && w.UserId == userId);
-
-            if (Wallet == null)
+            Wallet = await _walletManager.GetWallet(new WalletQuery
             {
-                return NotFound();
-            }
+                UserId = userId,
+                WalletId = walletId
+            });
 
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (Wallet == null) return NotFound();
+            if (!ModelState.IsValid) return Page();
 
             Transaction = new Transaction
             {
@@ -57,9 +54,8 @@ namespace LNblitz.Pages.Wallets.Transactions
 
             if (await TryUpdateModelAsync<Transaction>(Transaction, "transaction", t => t.Description, t => t.Amount))
             {
-                _context.Transactions.Add(Transaction);
-                await _context.SaveChangesAsync();
-                return RedirectToPage("./Index", new { walletId = Wallet.Id });
+                await _walletManager.AddOrUpdateTransaction(Transaction);
+                return RedirectToPage("./Index", new { walletId });
             }
 
             return Page();

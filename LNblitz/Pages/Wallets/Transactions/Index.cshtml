@@ -1,13 +1,13 @@
-@page "/Wallets/{walletId:int}/Transactions"
+@page "/Wallets/{walletId}/Transactions"
 @model LNblitz.Pages.Wallets.Transactions.IndexModel
 
 @{
-    ViewData["Title"] = "Your transactions";
+    ViewData["Title"] = $"{Model.Wallet.Name}: Transactions";
 }
 
 <h1>@ViewData["Title"]</h1>
 
-@if (Model.Transactions.Count > 0)
+@if (Model.Transactions.Any())
 {
     <table class="table">
         <thead>
@@ -15,6 +15,7 @@
             <th>Description</th>
             <th>Amount</th>
             <th>Status</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
@@ -28,6 +29,10 @@
                 </td>
                 <td>
                 </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-walletId="@Model.Wallet.WalletId" asp-route-transactionId="@transaction.TransactionId">Edit</a> |
+                    <a asp-page="./Details" asp-route-walletId="@Model.Wallet.WalletId" asp-route-transactionId="@transaction.TransactionId">Details</a>
+                </td>
             </tr>
         }
         </tbody>
@@ -35,6 +40,6 @@
 }
 
 <p>
-    <a asp-page="Create" asp-route-walletId="@Model.Wallet.Id">Send</a> |
-    <a asp-page="Create" asp-route-walletId="@Model.Wallet.Id">Recive</a>
+    <a asp-page="Create" asp-route-walletId="@Model.Wallet.WalletId">Send</a> |
+    <a asp-page="Create" asp-route-walletId="@Model.Wallet.WalletId">Recive</a>
 </p>

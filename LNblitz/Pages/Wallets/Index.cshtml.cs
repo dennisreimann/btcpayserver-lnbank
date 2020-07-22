@@ -1,32 +1,32 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using LNblitz.Data;
+using LNblitz.Data.Queries;
+using LNblitz.Data.Services;
 using LNblitz.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace LNblitz.Pages.Wallets
 {
     public class IndexModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
-        public IList<Wallet> Wallets { get; set; }
+        private readonly WalletManager _walletManager;
+        public IEnumerable<Wallet> Wallets { get; set; }
 
-        public IndexModel(ApplicationDbContext context, UserManager<User> userManager)
+        public IndexModel(UserManager<User> userManager, WalletManager walletManager)
         {
-            _context = context;
             _userManager = userManager;
+            _walletManager = walletManager;
         }
 
         public async Task OnGetAsync()
         {
             var userId = _userManager.GetUserId(User);
-            Wallets = await _context.Wallets
-                .Where(w => w.UserId == userId)
-                .ToListAsync();
+            Wallets = await _walletManager.GetWallets(new WalletsQuery
+            {
+                UserId = userId
+            });
         }
     }
 }

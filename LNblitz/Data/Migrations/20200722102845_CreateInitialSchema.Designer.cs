@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LNblitz.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200721131657_CreateInitialSchema")]
+    [Migration("20200722102845_CreateInitialSchema")]
     partial class CreateInitialSchema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,9 +20,9 @@ namespace LNblitz.Data.Migrations
 
             modelBuilder.Entity("LNblitz.Models.Transaction", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("TransactionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Amount")
                         .HasColumnType("INTEGER");
@@ -39,10 +39,10 @@ namespace LNblitz.Data.Migrations
                     b.Property<string>("PaymentRequest")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("WalletId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("WalletId")
+                        .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("TransactionId");
 
                     b.HasIndex("WalletId");
 
@@ -115,9 +115,9 @@ namespace LNblitz.Data.Migrations
 
             modelBuilder.Entity("LNblitz.Models.Wallet", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("WalletId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("AdminKey")
                         .HasColumnType("TEXT");
@@ -134,7 +134,7 @@ namespace LNblitz.Data.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("WalletId");
 
                     b.HasIndex("UserId");
 
@@ -277,9 +277,7 @@ namespace LNblitz.Data.Migrations
                 {
                     b.HasOne("LNblitz.Models.Wallet", "Wallet")
                         .WithMany("Transactions")
-                        .HasForeignKey("WalletId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("WalletId");
                 });
 
             modelBuilder.Entity("LNblitz.Models.Wallet", b =>

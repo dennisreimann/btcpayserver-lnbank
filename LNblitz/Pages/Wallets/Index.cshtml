@@ -7,7 +7,7 @@
 
 <h1>@ViewData["Title"]</h1>
 
-@if (Model.Wallets.Count > 0)
+@if (Model.Wallets.Any())
 {
     <table class="table">
         <thead>
@@ -23,9 +23,9 @@
                         @Html.DisplayFor(modelItem => wallet.Name)
                     </td>
                     <td>
-                        <a asp-page="./Transactions/Index" asp-route-walletId="@wallet.Id">Transactions</a> |
-                        <a asp-page="./Edit" asp-route-id="@wallet.Id">Edit</a> |
-                        <a asp-page="./Details" asp-route-id="@wallet.Id">Details</a>
+                        <a asp-page="./Transactions/Index" asp-route-walletId="@wallet.WalletId">Transactions</a> |
+                        <a asp-page="./Edit" asp-route-walletId="@wallet.WalletId">Edit</a> |
+                        <a asp-page="./Details" asp-route-walletId="@wallet.WalletId">Details</a>
                     </td>
                 </tr>
             }

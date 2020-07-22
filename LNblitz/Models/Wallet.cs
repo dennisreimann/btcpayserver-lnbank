@@ -1,11 +1,12 @@
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LNblitz.Models
 {
     public class Wallet
     {
-        public int Id { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public string WalletId { get; set; }
         public string UserId { get; set; }
         public string Name { get; set; }
         public string AdminKey { get; set; }
@@ -13,6 +14,6 @@ namespace LNblitz.Models
         public string ReadonlyKey { get; set; }
 
         public User User { get; set; }
-        public List<Transaction> Transactions { get; set; }
+        public List<Transaction> Transactions { get; set; } = new List<Transaction>();
     }
 }

@@ -1,43 +1,40 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using LNblitz.Data;
-using LNblitz.Models;
 using Microsoft.AspNetCore.Identity;
+using LNblitz.Data.Queries;
+using LNblitz.Data.Services;
+using LNblitz.Models;
 
 namespace LNblitz.Pages.Wallets
 {
     public class EditModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly WalletManager _walletManager;
         public Wallet Wallet { get; set; }
 
-        public EditModel(ApplicationDbContext context, UserManager<User> userManager)
+        public EditModel(UserManager<User> userManager, WalletManager walletManager)
         {
-            _context = context;
             _userManager = userManager;
+            _walletManager = walletManager;
         }
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(string walletId)
         {
             var userId = _userManager.GetUserId(User);
-            Wallet = await _context.Wallets
-                .FirstOrDefaultAsync(w => w.Id == id && w.UserId == userId);
-
-            if (Wallet == null)
+            Wallet = await _walletManager.GetWallet(new WalletQuery()
             {
-                return NotFound();
-            }
+                UserId = userId,
+                WalletId = walletId
+            });
+
+            if (Wallet == null) return NotFound();
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int id)
+        public async Task<IActionResult> OnPostAsync(string walletId)
         {
             if (!ModelState.IsValid)
             {
@@ -45,20 +42,20 @@ namespace LNblitz.Pages.Wallets
             }
 
             var userId = _userManager.GetUserId(User);
-            Wallet = await _context.Wallets
-                .FirstOrDefaultAsync(w => w.Id == id && w.UserId == userId);
-
-            if (Wallet == null)
+            Wallet = await _walletManager.GetWallet(new WalletQuery
             {
-                return NotFound();
-            }
+                UserId = userId,
+                WalletId = walletId
+            });
+
+            if (Wallet == null) return NotFound();
 
             if (await TryUpdateModelAsync<Wallet>(
                 Wallet,
                 "wallet",
                 w => w.Name))
             {
-                await _context.SaveChangesAsync();
+                await _walletManager.AddOrUpdateWallet(Wallet);
                 return RedirectToPage("./Index");
             }
 

@@ -156,8 +156,7 @@ namespace LNblitz.Data.Migrations
                 name: "Wallets",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    WalletId = table.Column<string>(nullable: false),
                     UserId = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     AdminKey = table.Column<string>(nullable: true),
@@ -166,7 +165,7 @@ namespace LNblitz.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Wallets", x => x.Id);
+                    table.PrimaryKey("PK_Wallets", x => x.WalletId);
                     table.ForeignKey(
                         name: "FK_Wallets_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -179,9 +178,8 @@ namespace LNblitz.Data.Migrations
                 name: "Transactions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    WalletId = table.Column<int>(nullable: false),
+                    TransactionId = table.Column<string>(nullable: false),
+                    WalletId = table.Column<string>(nullable: true),
                     Amount = table.Column<int>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     PaymentRequest = table.Column<string>(nullable: true),
@@ -190,13 +188,13 @@ namespace LNblitz.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Transactions", x => x.Id);
+                    table.PrimaryKey("PK_Transactions", x => x.TransactionId);
                     table.ForeignKey(
                         name: "FK_Transactions_Wallets_WalletId",
                         column: x => x.WalletId,
                         principalTable: "Wallets",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "WalletId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(

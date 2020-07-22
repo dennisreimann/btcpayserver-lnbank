@@ -1,5 +1,3 @@
-using System;
-
 namespace LNblitz.Models
 {
     public class ErrorViewModel

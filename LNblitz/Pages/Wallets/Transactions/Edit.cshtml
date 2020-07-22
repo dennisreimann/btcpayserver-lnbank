@@ -1,4 +1,4 @@
-@page "/Wallets/{walletId:int}/Transactions/Edit/{id:int}"
+@page "/Wallets/{walletId}/Transactions/Edit/{transactionId}"
 @model LNblitz.Pages.Wallets.Transactions.EditModel
 
 @{
@@ -24,7 +24,7 @@
 </div>
 
 <div>
-    <a asp-page="./Index" asp-route-walletId="@Model.Wallet.Id">Back to List</a>
+    <a asp-page="./Index" asp-route-walletId="@Model.WalletId">Back to List</a>
 </div>
 
 @section Scripts {

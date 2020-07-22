@@ -1,11 +1,13 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LNblitz.Models
 {
     public class Transaction
     {
-        public int Id { get; set; }
-        public int WalletId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public string TransactionId { get; set; }
+        public string WalletId { get; set; }
         public int Amount { get; set; }
         public string Description { get; set; }
         public string PaymentRequest { get; set; }

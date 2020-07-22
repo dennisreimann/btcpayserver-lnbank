@@ -1,4 +1,4 @@
-@page "{id:int}"
+@page "{walletId}"
 @model LNblitz.Pages.Wallets.DetailsModel
 
 @{
@@ -31,7 +31,7 @@
 </div>
 
 <div>
-    <a asp-page="./Edit" asp-route-id="@Model.Wallet.Id">Edit</a> |
-    <a asp-page="./Delete" asp-route-id="@Model.Wallet.Id">Delete</a> |
+    <a asp-page="./Edit" asp-route-walletId="@Model.Wallet.WalletId">Edit</a> |
+    <a asp-page="./Delete" asp-route-walletId="@Model.Wallet.WalletId">Delete</a> |
     <a asp-page="./Index">Back to List</a>
 </div>
