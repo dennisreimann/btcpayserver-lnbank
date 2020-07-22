@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
+using LNblitz.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using LNblitz.Data.Queries;
 using LNblitz.Data.Services;
-using LNblitz.Models;
 
 namespace LNblitz.Pages.Wallets.Transactions
 {

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using LNblitz.Data;
-using LNblitz.Models;
+using LNblitz.Data.Models;
 using LNblitz.Extensions;
 
 namespace LNblitz

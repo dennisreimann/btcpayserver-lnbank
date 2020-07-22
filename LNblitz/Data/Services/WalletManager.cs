@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LNblitz.Data.Models;
 using LNblitz.Data.Queries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using LNblitz.Models;
 
 namespace LNblitz.Data.Services
 {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
-namespace LNblitz.Models
+namespace LNblitz.Data.Models
 {
     public class User : IdentityUser
     {

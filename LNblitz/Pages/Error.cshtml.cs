@@ -1,6 +1,8 @@
-namespace LNblitz.Models
+using Microsoft.AspNetCore.Mvc.RazorPages;
+
+namespace LNblitz.Pages
 {
-    public class ErrorViewModel
+    public class Error : PageModel
     {
         public string RequestId { get; set; }
 

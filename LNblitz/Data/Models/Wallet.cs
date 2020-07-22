@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace LNblitz.Models
+namespace LNblitz.Data.Models
 {
     public class Wallet
     {
