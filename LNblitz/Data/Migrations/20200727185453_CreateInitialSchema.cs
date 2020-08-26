@@ -179,8 +179,10 @@ namespace LNblitz.Data.Migrations
                 columns: table => new
                 {
                     TransactionId = table.Column<string>(nullable: false),
+                    InvoiceId = table.Column<string>(nullable: true),
                     WalletId = table.Column<string>(nullable: true),
-                    Amount = table.Column<int>(nullable: false),
+                    Amount = table.Column<long>(nullable: false),
+                    AmountReceived = table.Column<long>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     PaymentRequest = table.Column<string>(nullable: true),
                     ExpiresAt = table.Column<DateTimeOffset>(nullable: false),

@@ -16,19 +16,25 @@ namespace LNblitz.Data.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.6");
 
-            modelBuilder.Entity("LNblitz.Models.Transaction", b =>
+            modelBuilder.Entity("LNblitz.Data.Models.Transaction", b =>
                 {
                     b.Property<string>("TransactionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Amount")
+                    b.Property<long>("Amount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("AmountReceived")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("InvoiceId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset?>("PaidAt")
@@ -47,7 +53,7 @@ namespace LNblitz.Data.Migrations
                     b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("LNblitz.Models.User", b =>
+            modelBuilder.Entity("LNblitz.Data.Models.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -111,7 +117,7 @@ namespace LNblitz.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("LNblitz.Models.Wallet", b =>
+            modelBuilder.Entity("LNblitz.Data.Models.Wallet", b =>
                 {
                     b.Property<string>("WalletId")
                         .ValueGeneratedOnAdd()
@@ -271,16 +277,16 @@ namespace LNblitz.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("LNblitz.Models.Transaction", b =>
+            modelBuilder.Entity("LNblitz.Data.Models.Transaction", b =>
                 {
-                    b.HasOne("LNblitz.Models.Wallet", "Wallet")
+                    b.HasOne("LNblitz.Data.Models.Wallet", "Wallet")
                         .WithMany("Transactions")
                         .HasForeignKey("WalletId");
                 });
 
-            modelBuilder.Entity("LNblitz.Models.Wallet", b =>
+            modelBuilder.Entity("LNblitz.Data.Models.Wallet", b =>
                 {
-                    b.HasOne("LNblitz.Models.User", "User")
+                    b.HasOne("LNblitz.Data.Models.User", "User")
                         .WithMany("Wallets")
                         .HasForeignKey("UserId");
                 });
@@ -296,7 +302,7 @@ namespace LNblitz.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("LNblitz.Models.User", null)
+                    b.HasOne("LNblitz.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -305,7 +311,7 @@ namespace LNblitz.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("LNblitz.Models.User", null)
+                    b.HasOne("LNblitz.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -320,7 +326,7 @@ namespace LNblitz.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LNblitz.Models.User", null)
+                    b.HasOne("LNblitz.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -329,7 +335,7 @@ namespace LNblitz.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("LNblitz.Models.User", null)
+                    b.HasOne("LNblitz.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

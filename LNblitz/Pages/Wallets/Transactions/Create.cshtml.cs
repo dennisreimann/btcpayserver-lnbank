@@ -54,7 +54,7 @@ namespace LNblitz.Pages.Wallets.Transactions
 
             if (await TryUpdateModelAsync<Transaction>(Transaction, "transaction", t => t.Description, t => t.Amount))
             {
-                await _walletManager.AddOrUpdateTransaction(Transaction);
+                await _walletManager.CreateTransaction(Transaction);
                 return RedirectToPage("./Index", new { walletId });
             }
 

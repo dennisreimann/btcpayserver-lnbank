@@ -56,7 +56,7 @@ namespace LNblitz.Pages.Wallets.Transactions
                 "transaction",
                 t => t.Description))
             {
-                await _walletManager.AddOrUpdateTransaction(Transaction);
+                await _walletManager.UpdateTransaction(Transaction);
                 return RedirectToPage("./Index", new { walletId });
             }
 

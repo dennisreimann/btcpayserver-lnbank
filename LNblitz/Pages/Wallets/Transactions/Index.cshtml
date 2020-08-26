@@ -14,6 +14,7 @@
         <tr>
             <th>Description</th>
             <th>Amount</th>
+            <th>Received</th>
             <th>Status</th>
             <th></th>
         </tr>
@@ -28,6 +29,10 @@
                     @Html.DisplayFor(t => transaction.Amount)
                 </td>
                 <td>
+                    @Html.DisplayFor(t => transaction.AmountReceived)
+                </td>
+                <td>
+                    @Html.DisplayFor(t => transaction.Status)
                 </td>
                 <td>
                     <a asp-page="./Edit" asp-route-walletId="@Model.Wallet.WalletId" asp-route-transactionId="@transaction.TransactionId">Edit</a> |
@@ -41,5 +46,5 @@
 
 <p>
     <a asp-page="Create" asp-route-walletId="@Model.Wallet.WalletId">Send</a> |
-    <a asp-page="Create" asp-route-walletId="@Model.Wallet.WalletId">Recive</a>
+    <a asp-page="Create" asp-route-walletId="@Model.Wallet.WalletId">Receive</a>
 </p>
