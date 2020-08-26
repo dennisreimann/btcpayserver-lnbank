@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] - LNblitz</title>
+    <link href="~/css/btcpayserver-variables.css" rel="stylesheet" asp-append-version="true">
+    <link href="~/css/btcpayserver-bootstrap.css" rel="stylesheet" asp-append-version="true">
+    <link href="~/css/btcpayserver-main.css" rel="stylesheet" asp-append-version="true">
+    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="~/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="~/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="~/favicon-16x16.png">
+    <link rel="manifest" href="~/site.webmanifest">
+    <link rel="mask-icon" color="#51b13e" href="~/safari-pinned-tab.svg">
+    <meta name="msapplication-TileColor" content="#0f3b21">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+    @RenderBody()
+    <script src="~/lib/jquery/dist/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
