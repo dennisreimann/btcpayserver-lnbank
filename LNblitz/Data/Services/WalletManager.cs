@@ -108,7 +108,6 @@ namespace LNblitz.Data.Services
 
             if (!query.IncludingExpired)
             {
-                // FIXME: https://docs.microsoft.com/en-us/dotnet/standard/datetime/converting-between-datetime-and-offset#conversions-from-datetimeoffset-to-datetime
                 var enumerable = queryable.AsEnumerable(); // Switch to client side filtering
                 return enumerable.Where(t => t.ExpiresAt > DateTimeOffset.UtcNow).ToList();
             }

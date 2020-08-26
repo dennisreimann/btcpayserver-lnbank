@@ -6,7 +6,6 @@ using BTCPayServer.Lightning;
 using LNblitz.Data.Models;
 using LNblitz.Data.Queries;
 using LNblitz.Data.Services;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

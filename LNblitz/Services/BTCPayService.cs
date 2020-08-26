@@ -9,8 +9,8 @@ namespace LNblitz.Services
 {
     public class BTCPayService
     {
-        private const string CryptoCode = "BTC";
         private readonly BTCPayServerClient _client;
+        private readonly string _cryptoCode = "BTC";
         private readonly string _storeId;
 
         public BTCPayService(IConfiguration configuration)
@@ -28,11 +28,9 @@ namespace LNblitz.Services
             _storeId = storeId;
         }
 
-        // TODO: Use custom response data classes
-
         public async Task<LightningInvoiceData> CreateInvoice(CreateInvoiceRequest req)
         {
-            return await _client.CreateLightningInvoice(_storeId, CryptoCode, new CreateLightningInvoiceRequest
+            return await _client.CreateLightningInvoice(_storeId, _cryptoCode, new CreateLightningInvoiceRequest
             {
                 Amount = req.Amount,
                 Description = req.Description,
@@ -42,7 +40,7 @@ namespace LNblitz.Services
 
         public async Task<LightningInvoiceData> GetInvoice(string invoiceId, CancellationToken cancellationToken)
         {
-            return await _client.GetLightningInvoice(_storeId, CryptoCode, invoiceId, cancellationToken);
+            return await _client.GetLightningInvoice(_storeId, _cryptoCode, invoiceId, cancellationToken);
         }
     }
 }

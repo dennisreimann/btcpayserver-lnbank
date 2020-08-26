@@ -7,6 +7,6 @@ namespace LNblitz.Services
     {
         public string Description { get; set; }
         public LightMoney Amount { get; set; }
-        public TimeSpan Expiry { get; set; } = new TimeSpan(24, 0, 0);
+        public TimeSpan Expiry { get; } = new TimeSpan(24, 0, 0);
     }
 }

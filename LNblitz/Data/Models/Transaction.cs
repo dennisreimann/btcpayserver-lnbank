@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using BTCPayServer.Lightning;
 
 namespace LNblitz.Data.Models
 {
