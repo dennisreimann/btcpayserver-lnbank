@@ -1,0 +1,80 @@
+@page "/Wallets/{walletId}/Transactions/Send/{action?}"
+@using BTCPayServer.Lightning
+@model LNblitz.Pages.Wallets.Transactions.SendModel
+
+@{
+    ViewData["Title"] = "Send";
+}
+
+<header class="mb-3">
+    <h1>@ViewData["Title"]</h1>
+</header>
+
+@if (Model.ErrorMessage != null)
+{
+    <div class="alert alert-danger mb-4" role="alert">
+        @Model.ErrorMessage
+    </div>
+}
+
+<div class="row">
+    <div class="col">
+        <form method="post" asp-route-action="@(Model.Bolt11 == null ? "Decode" : "Confirm")">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @if (Model.Bolt11 == null)
+            {
+                <div class="form-group">
+                    <label asp-for="Transaction.PaymentRequest" class="control-label"></label>
+                    <textarea asp-for="Transaction.PaymentRequest" class="form-control" rows="5"></textarea>
+                    <span asp-validation-for="Transaction.PaymentRequest" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        Decode payment request
+                    </button>
+                </div>
+            }
+            else
+            {
+                <input asp-for="Transaction.PaymentRequest" type="hidden" required/>
+
+                <div>
+                    <dl class="row">
+                        <dt class="col-sm-2">
+                            Expiry
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(t => t.Bolt11.ExpiryDate)
+                        </dd>
+                        <dt class="col-sm-2">
+                            Description
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(t => t.Bolt11.ShortDescription)
+                        </dd>
+                        <dt class="col-sm-2">
+                            Amount
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Model.Bolt11.MinimumAmount.ToUnit(LightMoneyUnit.Satoshi)
+                            sats
+                        </dd>
+                    </dl>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        Send @(Model.Bolt11.MinimumAmount.ToUnit(LightMoneyUnit.Satoshi)) sats
+                    </button>
+                </div>
+            }
+        </form>
+    </div>
+</div>
+
+<p class="mt-3">
+    <a asp-page="./Index" asp-route-walletId="@Model.Wallet.WalletId" class="text-secondary">Back to Wallet</a>
+</p>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

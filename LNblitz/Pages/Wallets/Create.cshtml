@@ -2,10 +2,12 @@
 @model LNblitz.Pages.Wallets.CreateModel
 
 @{
-    ViewData["Title"] = "Create a wallet";
+    ViewData["Title"] = "New wallet";
 }
 
-<h1>@ViewData["Title"]</h1>
+<header class="mb-3">
+    <h1>@ViewData["Title"]</h1>
+</header>
 
 <div class="row">
     <div class="col-md-4">
@@ -13,7 +15,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Wallet.Name" class="control-label"></label>
-                <input asp-for="Wallet.Name" class="form-control" />
+                <input asp-for="Wallet.Name" class="form-control" required />
                 <span asp-validation-for="Wallet.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -21,10 +23,6 @@
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-page="Index">Back to List</a>
 </div>
 
 @section Scripts {

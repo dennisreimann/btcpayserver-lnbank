@@ -158,7 +158,7 @@ namespace LNblitz.Data.Migrations
                 {
                     WalletId = table.Column<string>(nullable: false),
                     UserId = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
                     AdminKey = table.Column<string>(nullable: true),
                     InvoiceKey = table.Column<string>(nullable: true),
                     ReadonlyKey = table.Column<string>(nullable: true)
@@ -181,8 +181,8 @@ namespace LNblitz.Data.Migrations
                     TransactionId = table.Column<string>(nullable: false),
                     InvoiceId = table.Column<string>(nullable: true),
                     WalletId = table.Column<string>(nullable: true),
-                    Amount = table.Column<long>(nullable: false),
-                    AmountReceived = table.Column<long>(nullable: false),
+                    Amount = table.Column<long>(type: "long", nullable: false),
+                    AmountSettled = table.Column<long>(type: "long", nullable: true),
                     Description = table.Column<string>(nullable: true),
                     PaymentRequest = table.Column<string>(nullable: true),
                     ExpiresAt = table.Column<DateTimeOffset>(nullable: false),

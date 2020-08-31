@@ -37,6 +37,13 @@ namespace LNblitz.Services
                 Expiry = req.Expiry
             });
         }
+        public async Task PayInvoice(PayInvoiceRequest req)
+        {
+            await _client.PayLightningInvoice(_storeId, _cryptoCode, new PayLightningInvoiceRequest
+            {
+                BOLT11 = req.PaymentRequest
+            });
+        }
 
         public async Task<LightningInvoiceData> GetInvoice(string invoiceId, CancellationToken cancellationToken)
         {

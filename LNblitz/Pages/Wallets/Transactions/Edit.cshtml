@@ -5,7 +5,9 @@
     ViewData["Title"] = "Edit your transaction";
 }
 
-<h1>@ViewData["Title"]</h1>
+<header class="mb-3">
+    <h1>@ViewData["Title"]</h1>
+</header>
 
 <div class="row">
     <div class="col-md-4">
@@ -23,9 +25,9 @@
     </div>
 </div>
 
-<div>
-    <a asp-page="./Index" asp-route-walletId="@Model.WalletId">Back to List</a>
-</div>
+<p>
+    <a asp-page="./Index" asp-route-walletId="@Model.WalletId" class="text-secondary">Back to List</a>
+</p>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -25,7 +25,8 @@ namespace LNblitz.Pages.Wallets
             var userId = _userManager.GetUserId(User);
             Wallets = await _walletManager.GetWallets(new WalletsQuery
             {
-                UserId = userId
+                UserId = userId,
+                IncludeTransactions = true
             });
         }
     }

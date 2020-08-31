@@ -5,7 +5,9 @@
     ViewData["Title"] = $"Delete \"{Model.Wallet.Name}\"";
 }
 
-<h1>@ViewData["Title"]</h1>
+<header class="mb-3">
+    <h1>@ViewData["Title"]</h1>
+</header>
 
 <h3>Are you sure you want to delete this wallet?</h3>
     
@@ -13,4 +15,4 @@
     <input type="submit" value="Delete" class="btn btn-danger" />
 </form>
 
-<a asp-page="./Index">Back to List</a>
+<a asp-page="./Index" class="text-secondary">Back to List</a>

@@ -1,6 +1,8 @@
 using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using BTCPayServer.Lightning;
 
 namespace LNblitz.Data.Models
 {
@@ -10,11 +12,16 @@ namespace LNblitz.Data.Models
         public string TransactionId { get; set; }
         public string InvoiceId { get; set; }
         public string WalletId { get; set; }
-        public long Amount { get; set; }
-        [DisplayName("Received")]
-        public long AmountReceived { get; set; }
+
+        [Column(TypeName = "long")]
+        [Required]
+        public LightMoney Amount { get; set; }
+        [DisplayName("Settled amount")]
+        [Column(TypeName = "long")]
+        public LightMoney AmountSettled { get; set; }
         public string Description { get; set; }
         [DisplayName("Payment Request")]
+        [Required]
         public string PaymentRequest { get; set; }
         [DisplayName("Expiry")]
         public DateTimeOffset ExpiresAt { get; set; }
@@ -25,11 +32,20 @@ namespace LNblitz.Data.Models
 
         public string Status
         {
-            get {
-                if (AmountReceived > Amount) return "overpaid";
-                if (AmountReceived == Amount) return "paid";
-                if (AmountReceived > 0 && AmountReceived < Amount) return "partially paid";
-                if (ExpiresAt <= DateTimeOffset.UtcNow) return "expired";
+            get
+            {
+                if (AmountSettled != null && AmountSettled > 0)
+                {
+                    if (AmountSettled > Amount) return "overpaid";
+                    if (AmountSettled < Amount) return "partially paid";
+                    return "paid";
+                }
+
+                if (ExpiresAt <= DateTimeOffset.UtcNow)
+                {
+                    return "expired";
+                }
+
                 return "unpaid";
             }
         }

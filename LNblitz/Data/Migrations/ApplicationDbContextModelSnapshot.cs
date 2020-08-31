@@ -23,10 +23,10 @@ namespace LNblitz.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<long>("Amount")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("long");
 
-                    b.Property<long>("AmountReceived")
-                        .HasColumnType("INTEGER");
+                    b.Property<long?>("AmountSettled")
+                        .HasColumnType("long");
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
@@ -130,6 +130,7 @@ namespace LNblitz.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ReadonlyKey")

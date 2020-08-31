@@ -63,7 +63,7 @@ namespace LNblitz.Services
             if (invoice.Status == LightningInvoiceStatus.Paid)
             {
                 _logger.LogInformation($"Marking invoice {invoice.Id} as paid.");
-                transaction.AmountReceived = invoice.AmountReceived;
+                transaction.AmountSettled = invoice.AmountReceived;
                 transaction.PaidAt = invoice.PaidAt;
                 await _walletManager.UpdateTransaction(transaction);
             }

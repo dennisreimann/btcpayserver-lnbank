@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using BTCPayServer.Lightning;
 using LNblitz.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,14 +9,14 @@ using LNblitz.Data.Services;
 
 namespace LNblitz.Pages.Wallets.Transactions
 {
-    public class CreateModel : PageModel
+    public class ReceiveModel : PageModel
     {
         private readonly UserManager<User> _userManager;
         private readonly WalletManager _walletManager;
         public Wallet Wallet { get; set; }
         public Transaction Transaction { get; set; }
 
-        public CreateModel(UserManager<User> userManager, WalletManager walletManager)
+        public ReceiveModel(UserManager<User> userManager, WalletManager walletManager)
         {
             _userManager = userManager;
             _walletManager = walletManager;
@@ -47,14 +48,17 @@ namespace LNblitz.Pages.Wallets.Transactions
             if (Wallet == null) return NotFound();
             if (!ModelState.IsValid) return Page();
 
+            long sats = long.Parse(Request.Form["Transaction.Amount"].ToString());
+
             Transaction = new Transaction
             {
-                WalletId = walletId
+                WalletId = walletId,
+                Amount = new LightMoney(sats, LightMoneyUnit.Satoshi)
             };
 
-            if (await TryUpdateModelAsync<Transaction>(Transaction, "transaction", t => t.Description, t => t.Amount))
+            if (await TryUpdateModelAsync<Transaction>(Transaction, "Transaction", t => t.Description))
             {
-                await _walletManager.CreateTransaction(Transaction);
+                await _walletManager.CreateReceiveTransaction(Transaction);
                 return RedirectToPage("./Index", new { walletId });
             }
 
