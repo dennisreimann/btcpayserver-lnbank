@@ -3,31 +3,26 @@ using LNblitz.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Identity;
-using LNblitz.Data.Queries;
-using LNblitz.Data.Services;
+using LNblitz.Services;
 
 namespace LNblitz.Pages.Wallets
 {
     public class EditModel : PageModel
     {
         private readonly UserManager<User> _userManager;
-        private readonly WalletManager _walletManager;
+        private readonly WalletService _walletService;
         public Wallet Wallet { get; set; }
 
-        public EditModel(UserManager<User> userManager, WalletManager walletManager)
+        public EditModel(UserManager<User> userManager, WalletService walletService)
         {
             _userManager = userManager;
-            _walletManager = walletManager;
+            _walletService = walletService;
         }
 
         public async Task<IActionResult> OnGetAsync(string walletId)
         {
             var userId = _userManager.GetUserId(User);
-            Wallet = await _walletManager.GetWallet(new WalletQuery()
-            {
-                UserId = userId,
-                WalletId = walletId
-            });
+            Wallet = await _walletService.GetWallet(userId, walletId);
 
             if (Wallet == null) return NotFound();
 
@@ -42,20 +37,13 @@ namespace LNblitz.Pages.Wallets
             }
 
             var userId = _userManager.GetUserId(User);
-            Wallet = await _walletManager.GetWallet(new WalletQuery
-            {
-                UserId = userId,
-                WalletId = walletId
-            });
+            Wallet = await _walletService.GetWallet(userId, walletId);
 
             if (Wallet == null) return NotFound();
 
-            if (await TryUpdateModelAsync<Wallet>(
-                Wallet,
-                "wallet",
-                w => w.Name))
+            if (await TryUpdateModelAsync<Wallet>(Wallet, "wallet", w => w.Name))
             {
-                await _walletManager.AddOrUpdateWallet(Wallet);
+                await _walletService.AddOrUpdateWallet(Wallet);
                 return RedirectToPage("./Index");
             }
 

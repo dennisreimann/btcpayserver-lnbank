@@ -1,36 +1,32 @@
 using System.Threading.Tasks;
 using LNblitz.Data.Models;
+using LNblitz.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using LNblitz.Data.Queries;
-using LNblitz.Data.Services;
 
 namespace LNblitz.Pages.Wallets.Transactions
 {
     public class EditModel : PageModel
     {
         private readonly UserManager<User> _userManager;
-        private readonly WalletManager _walletManager;
+        private readonly WalletService _walletService;
         public string WalletId { get; set; }
         public Transaction Transaction { get; set; }
 
-        public EditModel(UserManager<User> userManager, WalletManager walletManager)
+        public EditModel(
+            UserManager<User> userManager,
+            WalletService walletService)
         {
             _userManager = userManager;
-            _walletManager = walletManager;
+            _walletService = walletService;
         }
 
         public async Task<IActionResult> OnGetAsync(string walletId, string transactionId)
         {
             var userId = _userManager.GetUserId(User);
             WalletId = walletId;
-            Transaction = await _walletManager.GetTransaction(new TransactionQuery
-            {
-                UserId = userId,
-                WalletId = walletId,
-                TransactionId = transactionId
-            });
+            Transaction = await _walletService.GetTransaction(userId, walletId, transactionId);
 
             if (Transaction == null) return NotFound();
 
@@ -41,22 +37,14 @@ namespace LNblitz.Pages.Wallets.Transactions
         {
             var userId = _userManager.GetUserId(User);
             WalletId = walletId;
-            Transaction = await _walletManager.GetTransaction(new TransactionQuery
-            {
-                UserId = userId,
-                WalletId = walletId,
-                TransactionId = transactionId
-            });
+            Transaction = await _walletService.GetTransaction(userId, walletId, transactionId);
 
             if (!ModelState.IsValid) return Page();
             if (Transaction == null) return NotFound();
 
-            if (await TryUpdateModelAsync<Transaction>(
-                Transaction,
-                "transaction",
-                t => t.Description))
+            if (await TryUpdateModelAsync<Transaction>(Transaction, "transaction", t => t.Description))
             {
-                await _walletManager.UpdateTransaction(Transaction);
+                await _walletService.UpdateTransaction(Transaction);
                 return RedirectToPage("./Index", new { walletId });
             }
 

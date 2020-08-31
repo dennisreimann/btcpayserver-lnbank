@@ -1,23 +1,23 @@
 using System;
 using System.Threading.Tasks;
-using LNblitz.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Identity;
-using LNblitz.Data.Services;
+using LNblitz.Data.Models;
+using LNblitz.Services;
 
 namespace LNblitz.Pages.Wallets
 {
     public class CreateModel : PageModel
     {
         private readonly UserManager<User> _userManager;
-        private readonly WalletManager _walletManager;
+        private readonly WalletService _walletService;
         public Wallet Wallet { get; set; }
 
-        public CreateModel(UserManager<User> userManager, WalletManager walletManager)
+        public CreateModel(UserManager<User> userManager, WalletService walletService)
         {
             _userManager = userManager;
-            _walletManager = walletManager;
+            _walletService = walletService;
         }
 
         public IActionResult OnGet()
@@ -40,7 +40,7 @@ namespace LNblitz.Pages.Wallets
 
             if (await TryUpdateModelAsync<Wallet>(Wallet, "wallet", w => w.Name))
             {
-                await _walletManager.AddOrUpdateWallet(Wallet);
+                await _walletService.AddOrUpdateWallet(Wallet);
                 return RedirectToPage("./Index");
             }
 

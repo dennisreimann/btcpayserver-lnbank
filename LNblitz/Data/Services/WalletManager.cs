@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LNblitz.Data.Models;
 using LNblitz.Data.Queries;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LNblitz.Data.Services
@@ -48,26 +49,24 @@ namespace LNblitz.Data.Services
             return await queryable.FirstOrDefaultAsync();
         }
 
-        public async Task AddOrUpdateWallet(Wallet wallet)
+        public async Task<Wallet> AddOrUpdateWallet(Wallet wallet)
         {
             using var scope = _serviceScopeFactory.CreateScope();
             await using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            EntityEntry<Wallet> entry;
 
             if (string.IsNullOrEmpty(wallet.WalletId))
             {
-                context.Wallets.Add(wallet);
+                entry = context.Wallets.Add(wallet);
             }
             else
             {
-                context.Entry(wallet).State = EntityState.Modified;
+                entry = context.Entry(wallet);
+                entry.State = EntityState.Modified;
             }
             await context.SaveChangesAsync();
-        }
 
-        public async Task RemoveWallet(WalletQuery query)
-        {
-            var wallet = await GetWallet(query);
-            await RemoveWallet(wallet);
+            return entry.Entity;
         }
 
         public async Task RemoveWallet(Wallet wallet)
@@ -157,19 +156,17 @@ namespace LNblitz.Data.Services
             return entry.Entity;
         }
 
-        public async Task UpdateTransaction(Transaction transaction)
+        public async Task<Transaction> UpdateTransaction(Transaction transaction)
         {
             using var scope = _serviceScopeFactory.CreateScope();
             await using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            context.Entry(transaction).State = EntityState.Modified;
-            await context.SaveChangesAsync();
-        }
+            var entry = context.Entry(transaction);
+            entry.State = EntityState.Modified;
 
-        public async Task RemoveTransaction(TransactionQuery query)
-        {
-            var transaction = await GetTransaction(query);
-            await RemoveTransaction(transaction);
+            await context.SaveChangesAsync();
+
+            return entry.Entity;
         }
 
         public async Task RemoveTransaction(Transaction transaction)

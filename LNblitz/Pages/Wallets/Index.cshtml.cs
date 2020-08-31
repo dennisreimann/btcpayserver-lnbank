@@ -3,31 +3,28 @@ using System.Threading.Tasks;
 using LNblitz.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using LNblitz.Data.Queries;
-using LNblitz.Data.Services;
+using LNblitz.Services;
 
 namespace LNblitz.Pages.Wallets
 {
     public class IndexModel : PageModel
     {
         private readonly UserManager<User> _userManager;
-        private readonly WalletManager _walletManager;
+        private readonly WalletService _walletService;
         public IEnumerable<Wallet> Wallets { get; set; }
 
-        public IndexModel(UserManager<User> userManager, WalletManager walletManager)
+        public IndexModel(
+            UserManager<User> userManager,
+            WalletService walletService)
         {
             _userManager = userManager;
-            _walletManager = walletManager;
+            _walletService = walletService;
         }
 
         public async Task OnGetAsync()
         {
             var userId = _userManager.GetUserId(User);
-            Wallets = await _walletManager.GetWallets(new WalletsQuery
-            {
-                UserId = userId,
-                IncludeTransactions = true
-            });
+            Wallets = await _walletService.GetWallets(userId);
         }
     }
 }

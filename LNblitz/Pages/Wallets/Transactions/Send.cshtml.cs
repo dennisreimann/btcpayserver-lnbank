@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using NBitcoin;
 
 namespace LNblitz.Pages.Wallets.Transactions
 {
@@ -54,7 +53,7 @@ namespace LNblitz.Pages.Wallets.Transactions
             if (Wallet == null) return NotFound();
             if (!ModelState.IsValid) return Page();
 
-            Bolt11 = ParsePaymentRequest(PaymentRequest);
+            Bolt11 = _walletService.ParsePaymentRequest(PaymentRequest);
 
             return Page();
         }
@@ -67,7 +66,7 @@ namespace LNblitz.Pages.Wallets.Transactions
             if (Wallet == null) return NotFound();
             if (!ModelState.IsValid) return Page();
 
-            Bolt11 = ParsePaymentRequest(PaymentRequest);
+            Bolt11 = _walletService.ParsePaymentRequest(PaymentRequest);
 
             try
             {
@@ -81,12 +80,6 @@ namespace LNblitz.Pages.Wallets.Transactions
             }
 
             return Page();
-        }
-
-        private BOLT11PaymentRequest ParsePaymentRequest(string payReq)
-        {
-            // TODO: Configure network
-            return BOLT11PaymentRequest.Parse(payReq, Network.RegTest);
         }
     }
 }
