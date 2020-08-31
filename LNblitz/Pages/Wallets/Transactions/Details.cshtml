@@ -55,14 +55,8 @@
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Transaction.PaymentRequest)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-10 text-break">
             @Html.DisplayFor(model => model.Transaction.PaymentRequest)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Transaction.ExpiresAt)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Transaction.ExpiresAt)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Transaction.Status)
@@ -77,6 +71,15 @@
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.Transaction.PaidAt)
+            </dd>
+        }
+        else
+        {
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Transaction.ExpiresAt)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Transaction.ExpiresAt)
             </dd>
         }
     </dl>

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -13,6 +15,8 @@ namespace LNblitz.Data.Models
         public string UserId { get; set; }
         [Required]
         public string Name { get; set; }
+        [DisplayName("Creation date")]
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
         public string AdminKey { get; set; }
         public string InvoiceKey { get; set; }
         public string ReadonlyKey { get; set; }

@@ -9,6 +9,7 @@ namespace LNblitz.Extensions
         public static void AddAppServices(this IServiceCollection collection)
         {
             collection.AddSingleton<WalletManager>();
+            collection.AddSingleton<WalletService>();
             collection.AddSingleton<BTCPayService>();
         }
     }

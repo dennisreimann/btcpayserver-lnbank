@@ -36,6 +36,7 @@
     <table class="table table-borderless table-hover">
         <thead>
             <tr>
+                <th>Date</th>
                 <th>Description</th>
                 <th class="text-right">Amount</th>
                 <th class="text-right">Settled</th>
@@ -45,6 +46,9 @@
         <tbody>
         @foreach (var transaction in Model.Transactions) {
             <tr>
+                <td>
+                    @Html.DisplayFor(t => transaction.Date)
+                </td>
                 <td>
                     @Html.DisplayFor(t => transaction.Description)
                 </td>

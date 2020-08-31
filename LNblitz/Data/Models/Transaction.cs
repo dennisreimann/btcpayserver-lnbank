@@ -23,6 +23,8 @@ namespace LNblitz.Data.Models
         [DisplayName("Payment Request")]
         [Required]
         public string PaymentRequest { get; set; }
+        [DisplayName("Creation date")]
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
         [DisplayName("Expiry")]
         public DateTimeOffset ExpiresAt { get; set; }
         [DisplayName("Payment date")]
@@ -47,6 +49,14 @@ namespace LNblitz.Data.Models
                 }
 
                 return "unpaid";
+            }
+        }
+
+        public DateTimeOffset Date
+        {
+            get
+            {
+                return PaidAt ?? CreatedAt;
             }
         }
     }

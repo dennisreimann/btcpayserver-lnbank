@@ -1,4 +1,5 @@
 @page "/Wallets/{walletId}/Transactions/Receive"
+@using BTCPayServer.Lightning
 @model LNblitz.Pages.Wallets.Transactions.ReceiveModel
 
 @{
@@ -6,22 +7,29 @@
 }
 
 <header class="mb-3">
-    <h1>@ViewData["Title"]</h1>
+    <h1 class="d-inline-block mr-2">
+        @ViewData["Title"]
+        <span class="badge badge-info d-inline-block ml-2">@Model.Wallet.Balance.ToUnit(LightMoneyUnit.Satoshi) sats</span>
+    </h1>
 </header>
+
+@if (!ModelState.IsValid)
+{
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+}
 
 <div class="row">
     <div class="col-md-4">
         <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Transaction.Description" class="control-label"></label>
-                <input asp-for="Transaction.Description" class="form-control" />
-                <span asp-validation-for="Transaction.Description" class="text-danger"></span>
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Transaction.Amount" class="control-label"></label>
-                <input asp-for="Transaction.Amount" class="form-control" type="number" required />
-                <span asp-validation-for="Transaction.Amount" class="text-danger"></span>
+                <label asp-for="Amount" class="control-label"></label>
+                <input asp-for="Amount" class="form-control text-right" type="number" style="width:15ch;" required />
+                <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create invoice" class="btn btn-primary" />

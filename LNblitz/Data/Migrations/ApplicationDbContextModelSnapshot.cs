@@ -28,6 +28,9 @@ namespace LNblitz.Data.Migrations
                     b.Property<long?>("AmountSettled")
                         .HasColumnType("long");
 
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
@@ -41,6 +44,7 @@ namespace LNblitz.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PaymentRequest")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("WalletId")
@@ -124,6 +128,9 @@ namespace LNblitz.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("AdminKey")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("InvoiceKey")

@@ -1,4 +1,4 @@
-@page "/Wallets/{walletId}/Transactions/Send/{action?}"
+@page "/Wallets/{walletId}/Transactions/Send/{handler?}"
 @using BTCPayServer.Lightning
 @model LNblitz.Pages.Wallets.Transactions.SendModel
 
@@ -7,8 +7,16 @@
 }
 
 <header class="mb-3">
-    <h1>@ViewData["Title"]</h1>
+    <h1 class="d-inline-block mr-2">
+        @ViewData["Title"]
+        <span class="badge badge-info d-inline-block ml-2">@Model.Wallet.Balance.ToUnit(LightMoneyUnit.Satoshi) sats</span>
+    </h1>
 </header>
+
+@if (!ModelState.IsValid)
+{
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+}
 
 @if (Model.ErrorMessage != null)
 {
@@ -19,14 +27,13 @@
 
 <div class="row">
     <div class="col">
-        <form method="post" asp-route-action="@(Model.Bolt11 == null ? "Decode" : "Confirm")">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <form method="post" asp-page-handler="@(Model.Bolt11 == null ? "Decode" : "Confirm")">
             @if (Model.Bolt11 == null)
             {
                 <div class="form-group">
-                    <label asp-for="Transaction.PaymentRequest" class="control-label"></label>
-                    <textarea asp-for="Transaction.PaymentRequest" class="form-control" rows="5"></textarea>
-                    <span asp-validation-for="Transaction.PaymentRequest" class="text-danger"></span>
+                    <label asp-for="PaymentRequest" class="control-label"></label>
+                    <textarea asp-for="PaymentRequest" class="form-control" rows="5"></textarea>
+                    <span asp-validation-for="PaymentRequest" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">
@@ -36,7 +43,7 @@
             }
             else
             {
-                <input asp-for="Transaction.PaymentRequest" type="hidden" required/>
+                <input asp-for="PaymentRequest" type="hidden" required/>
 
                 <div>
                     <dl class="row">

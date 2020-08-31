@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BTCPayServer.Lightning;
 using LNblitz.Data.Models;
 using LNblitz.Data.Queries;
-using LNblitz.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -137,40 +135,26 @@ namespace LNblitz.Data.Services
             return wallet?.Transactions.SingleOrDefault(t => t.TransactionId == query.TransactionId);
         }
 
-        public async Task CreateReceiveTransaction(Transaction transaction)
+        public async Task<Transaction> CreateReceiveTransaction(Transaction transaction)
         {
             using var scope = _serviceScopeFactory.CreateScope();
             await using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var btcpay = scope.ServiceProvider.GetRequiredService<BTCPayService>();
 
-            var data = await btcpay.CreateInvoice(new CreateInvoiceRequest
-                {
-                    Amount = transaction.Amount,
-                    Description = transaction.Description
-                }
-            );
-
-            transaction.InvoiceId = data.Id;
-            transaction.ExpiresAt = data.ExpiresAt;
-            transaction.PaymentRequest = data.BOLT11;
-
-            await context.Transactions.AddAsync(transaction);
+            var entry = await context.Transactions.AddAsync(transaction);
             await context.SaveChangesAsync();
+
+            return entry.Entity;
         }
 
-        public async Task CreateSendTransaction(Transaction transaction, BOLT11PaymentRequest Bolt11)
+        public async Task<Transaction> CreateSendTransaction(Transaction transaction)
         {
             using var scope = _serviceScopeFactory.CreateScope();
             await using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var btcpay = scope.ServiceProvider.GetRequiredService<BTCPayService>();
 
-            await btcpay.PayInvoice(new PayInvoiceRequest { PaymentRequest = transaction.PaymentRequest });
-
-            transaction.AmountSettled = Bolt11.MinimumAmount * -1;
-            transaction.PaidAt = DateTimeOffset.UtcNow;
-
-            await context.Transactions.AddAsync(transaction);
+            var entry = await context.Transactions.AddAsync(transaction);
             await context.SaveChangesAsync();
+
+            return entry.Entity;
         }
 
         public async Task UpdateTransaction(Transaction transaction)

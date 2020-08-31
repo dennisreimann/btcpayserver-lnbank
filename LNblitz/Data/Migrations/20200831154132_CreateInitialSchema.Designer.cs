@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LNblitz.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200827161225_CreateInitialSchema")]
+    [Migration("20200831154132_CreateInitialSchema")]
     partial class CreateInitialSchema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,6 +30,9 @@ namespace LNblitz.Data.Migrations
                     b.Property<long?>("AmountSettled")
                         .HasColumnType("long");
 
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
@@ -43,6 +46,7 @@ namespace LNblitz.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PaymentRequest")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("WalletId")
@@ -126,6 +130,9 @@ namespace LNblitz.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("AdminKey")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("InvoiceKey")

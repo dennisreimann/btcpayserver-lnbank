@@ -1,35 +1,37 @@
+using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using BTCPayServer.Lightning;
 using LNblitz.Data.Models;
+using LNblitz.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using LNblitz.Data.Queries;
-using LNblitz.Data.Services;
 
 namespace LNblitz.Pages.Wallets.Transactions
 {
     public class ReceiveModel : PageModel
     {
         private readonly UserManager<User> _userManager;
-        private readonly WalletManager _walletManager;
+        private readonly WalletService _walletService;
         public Wallet Wallet { get; set; }
-        public Transaction Transaction { get; set; }
+        [BindProperty]
+        public string Description { get; set; }
+        [BindProperty]
+        [DisplayName("Amount in sats")]
+        [Required]
+        public long Amount { get; set; }
 
-        public ReceiveModel(UserManager<User> userManager, WalletManager walletManager)
+        public ReceiveModel(UserManager<User> userManager, WalletService walletService)
         {
             _userManager = userManager;
-            _walletManager = walletManager;
+            _walletService = walletService;
         }
 
         public async Task<IActionResult> OnGet(string walletId)
         {
             var userId = _userManager.GetUserId(User);
-            Wallet = await _walletManager.GetWallet(new WalletQuery
-            {
-                UserId = userId,
-                WalletId = walletId
-            });
+            Wallet = await _walletService.GetWallet(userId, walletId);
 
             if (Wallet == null) return NotFound();
 
@@ -39,30 +41,20 @@ namespace LNblitz.Pages.Wallets.Transactions
         public async Task<IActionResult> OnPostAsync(string walletId)
         {
             var userId = _userManager.GetUserId(User);
-            Wallet = await _walletManager.GetWallet(new WalletQuery
-            {
-                UserId = userId,
-                WalletId = walletId
-            });
+            Wallet = await _walletService.GetWallet(userId, walletId);
 
             if (Wallet == null) return NotFound();
             if (!ModelState.IsValid) return Page();
 
-            long sats = long.Parse(Request.Form["Transaction.Amount"].ToString());
-
-            Transaction = new Transaction
+            try
             {
-                WalletId = walletId,
-                Amount = new LightMoney(sats, LightMoneyUnit.Satoshi)
-            };
-
-            if (await TryUpdateModelAsync<Transaction>(Transaction, "Transaction", t => t.Description))
-            {
-                await _walletManager.CreateReceiveTransaction(Transaction);
+                await _walletService.Receive(Wallet, Amount, Description);
                 return RedirectToPage("./Index", new { walletId });
             }
-
-            return Page();
+            catch (Exception)
+            {
+                return Page();
+            }
         }
     }
 }
