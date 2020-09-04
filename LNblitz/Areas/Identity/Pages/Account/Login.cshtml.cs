@@ -33,7 +33,7 @@ namespace LNblitz.Areas.Identity.Pages.Account
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-        public string ReturnUrl { get; set; } = "/Wallets/";
+        public string ReturnUrl { get; set; } = "/";
 
         [TempData]
         public string ErrorMessage { get; set; }
@@ -59,7 +59,7 @@ namespace LNblitz.Areas.Identity.Pages.Account
                 ModelState.AddModelError(string.Empty, ErrorMessage);
             }
 
-            returnUrl = returnUrl ?? Url.Content("~/Wallets/");
+            returnUrl = returnUrl ?? Url.Content("/");
 
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
@@ -71,7 +71,7 @@ namespace LNblitz.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl = returnUrl ?? Url.Content("~/Wallets/");
+            returnUrl = returnUrl ?? Url.Content("/");
 
             if (ModelState.IsValid)
             {

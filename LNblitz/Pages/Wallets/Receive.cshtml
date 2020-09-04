@@ -1,4 +1,4 @@
-@page "/Wallets/{walletId}/Transactions/Receive"
+@page "/Wallets/{walletId}/Receive"
 @using BTCPayServer.Lightning
 @model LNblitz.Pages.Wallets.Transactions.ReceiveModel
 
@@ -39,7 +39,7 @@
 </div>
 
 <p class="mt-3">
-    <a asp-page="./Index" asp-route-walletId="@Model.Wallet.WalletId" class="text-secondary">Back to Wallet</a>
+    <a asp-page="/Index" asp-route-walletId="@Model.Wallet.WalletId" class="text-secondary">Back to Wallet</a>
 </p>
 
 @section Scripts {

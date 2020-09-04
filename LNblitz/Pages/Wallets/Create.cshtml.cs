@@ -41,7 +41,7 @@ namespace LNblitz.Pages.Wallets
             if (await TryUpdateModelAsync<Wallet>(Wallet, "wallet", w => w.Name))
             {
                 await _walletService.AddOrUpdateWallet(Wallet);
-                return RedirectToPage("./Index");
+                return RedirectToPage("/Index", new { walletId = Wallet.WalletId });
             }
 
             return Page();
