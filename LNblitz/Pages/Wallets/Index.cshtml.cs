@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LNblitz.Data.Models;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +13,7 @@ namespace LNblitz.Pages.Wallets
         private readonly UserManager<User> _userManager;
         private readonly WalletService _walletService;
         public IEnumerable<Wallet> Wallets { get; set; }
+        public Wallet SelectedWallet { get; set; }
 
         public IndexModel(
             UserManager<User> userManager,
@@ -21,10 +23,15 @@ namespace LNblitz.Pages.Wallets
             _walletService = walletService;
         }
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(string walletId)
         {
             var userId = _userManager.GetUserId(User);
             Wallets = await _walletService.GetWallets(userId);
+
+            if (walletId != null)
+            {
+                SelectedWallet = Wallets.FirstOrDefault(w => w.WalletId == walletId);
+            }
         }
     }
 }
