@@ -17,11 +17,6 @@ namespace LNblitz
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                })
-                .ConfigureServices(services =>
-                {
-                    services.AddHostedService<LightningInvoiceWatcher>();
-                    services.AddScoped<IScopedLightningInvoiceWatcher, ScopedLightningInvoiceWatcher>();
                 });
     }
 }

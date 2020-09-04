@@ -8,6 +8,8 @@ namespace LNblitz.Extensions
     {
         public static void AddAppServices(this IServiceCollection collection)
         {
+            collection.AddHostedService<LightningInvoiceWatcher>();
+
             collection.AddSingleton<WalletManager>();
             collection.AddSingleton<WalletService>();
             collection.AddSingleton<BTCPayService>();

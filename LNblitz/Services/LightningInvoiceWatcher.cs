@@ -8,22 +8,24 @@ using Microsoft.Extensions.Logging;
 
 namespace LNblitz.Services
 {
-    internal interface IScopedLightningInvoiceWatcher
+    public class LightningInvoiceWatcher : BackgroundService
     {
-        Task CheckInvoices(CancellationToken stoppingToken);
-    }
-
-    internal class ScopedLightningInvoiceWatcher : IScopedLightningInvoiceWatcher
-    {
-        private readonly ILogger _logger;
         private readonly WalletService _walletService;
+        private readonly ILogger<LightningInvoiceWatcher> _logger;
 
-        public ScopedLightningInvoiceWatcher(
-            ILogger<ScopedLightningInvoiceWatcher> logger,
-            WalletService walletService)
+        public LightningInvoiceWatcher(
+            WalletService walletService,
+            ILogger<LightningInvoiceWatcher> logger)
         {
-            _logger = logger;
             _walletService = walletService;
+            _logger = logger;
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+        {
+            _logger.LogInformation($"{nameof(LightningInvoiceWatcher)} starting.");
+
+            await CheckInvoices(cancellationToken);
         }
 
         public async Task CheckInvoices(CancellationToken stoppingToken)
@@ -42,36 +44,6 @@ namespace LNblitz.Services
                 }
 
                 await Task.Delay(5_000, stoppingToken);
-            }
-        }
-    }
-
-    public class LightningInvoiceWatcher : BackgroundService
-    {
-        public IServiceProvider Services { get; }
-        private readonly ILogger<LightningInvoiceWatcher> _logger;
-
-        public LightningInvoiceWatcher(
-            IServiceProvider services,
-            ILogger<LightningInvoiceWatcher> logger)
-        {
-            Services = services;
-            _logger = logger;
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogInformation($"{nameof(LightningInvoiceWatcher)} starting.");
-
-            await CheckInvoices(cancellationToken);
-        }
-
-        private async Task CheckInvoices(CancellationToken cancellationToken)
-        {
-            using (var scope = Services.CreateScope())
-            {
-                var scopedService = scope.ServiceProvider.GetRequiredService<IScopedLightningInvoiceWatcher>();
-                await scopedService.CheckInvoices(cancellationToken);
             }
         }
 
