@@ -72,7 +72,6 @@
                             <th>Description</th>
                             <th class="text-right">Amount</th>
                             <th class="text-right">Settled</th>
-                            <th></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -80,7 +79,9 @@
                         {
                             <tr>
                                 <td>
-                                    @Html.DisplayFor(t => transaction.Date)
+                                    <a asp-page="./Transactions/Details" asp-route-walletId="@Model.SelectedWallet.WalletId" asp-route-transactionId="@transaction.TransactionId">
+                                        @Html.DisplayFor(t => transaction.CreatedAt)
+                                    </a>
                                 </td>
                                 <td>
                                     @Html.DisplayFor(t => transaction.Description)
@@ -102,23 +103,6 @@
                                             @Html.DisplayFor(t => transaction.Status)
                                         </span>
                                     }
-                                </td>
-                                <td class="text-right">
-                                    <a asp-page="./Edit" asp-route-walletId="@Model.SelectedWallet.WalletId" asp-route-transactionId="@transaction.TransactionId" class="text-secondary d-inline-flex align-items-center mx-1">
-                                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil mr-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
-                                            <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
-                                        </svg>
-                                        Edit
-                                    </a>
-                                    <a asp-page="./Details" asp-route-walletId="@Model.SelectedWallet.WalletId" asp-route-transactionId="@transaction.TransactionId" class="text-secondary d-inline-flex align-items-center mx-1">
-                                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-info-circle mr-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                            <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588z"/>
-                                            <circle cx="8" cy="4.5" r="1"/>
-                                        </svg>
-                                        Details
-                                    </a>
                                 </td>
                             </tr>
                         }

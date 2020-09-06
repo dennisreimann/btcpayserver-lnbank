@@ -49,7 +49,7 @@ namespace LNblitz.Pages.Wallets.Transactions
             try
             {
                 await _walletService.Receive(Wallet, Amount, Description);
-                return RedirectToPage("./Index", new { walletId });
+                return RedirectToPage("/Index", new { walletId });
             }
             catch (Exception)
             {

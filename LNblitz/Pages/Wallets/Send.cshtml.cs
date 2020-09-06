@@ -71,7 +71,7 @@ namespace LNblitz.Pages.Wallets.Transactions
             try
             {
                 await _walletService.Send(Wallet, Bolt11, PaymentRequest);
-                return RedirectToPage("./Index", new { walletId });
+                return RedirectToPage("/Index", new { walletId });
             }
             catch (Exception exception)
             {

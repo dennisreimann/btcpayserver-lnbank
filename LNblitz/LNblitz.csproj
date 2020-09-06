@@ -90,4 +90,11 @@
       <ProjectReference Include="..\..\server\BTCPayServer.Client\BTCPayServer.Client.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Pages\Wallets\Transactions\Delete.cshtml" />
+      <UpToDateCheckInput Remove="Pages\Wallets\Transactions\Details.cshtml" />
+      <UpToDateCheckInput Remove="Pages\Wallets\Transactions\Edit.cshtml" />
+      <UpToDateCheckInput Remove="Pages\Wallets\Transactions\Index.cshtml" />
+    </ItemGroup>
+
 </Project>

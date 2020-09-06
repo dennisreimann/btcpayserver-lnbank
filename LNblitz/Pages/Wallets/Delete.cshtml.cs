@@ -40,7 +40,7 @@ namespace LNblitz.Pages.Wallets
 
             await _walletService.RemoveWallet(Wallet);
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("/Index");
         }
     }
 }
