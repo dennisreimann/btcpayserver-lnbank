@@ -63,7 +63,7 @@
                         </a>
                     </div>
                 </header>
-                @if (Model.SelectedWallet.Transactions.Any())
+                @if (Model.Transactions.Any())
                 {
                     <table class="table table-borderless table-hover">
                         <thead>
@@ -75,12 +75,12 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach (var transaction in Model.SelectedWallet.Transactions)
+                        @foreach (var transaction in Model.Transactions)
                         {
                             <tr>
                                 <td>
                                     <a asp-page="./Transactions/Details" asp-route-walletId="@Model.SelectedWallet.WalletId" asp-route-transactionId="@transaction.TransactionId">
-                                        @Html.DisplayFor(t => transaction.CreatedAt)
+                                        @Html.DisplayFor(t => transaction.CreatedAt.LocalDateTime)
                                     </a>
                                 </td>
                                 <td>

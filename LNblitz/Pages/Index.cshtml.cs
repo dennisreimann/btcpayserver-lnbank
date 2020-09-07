@@ -14,6 +14,7 @@ namespace LNblitz.Pages.Wallets
         private readonly WalletService _walletService;
         public IEnumerable<Wallet> Wallets { get; set; }
         public Wallet SelectedWallet { get; set; }
+        public IEnumerable<Transaction> Transactions { get; set; }
 
         public IndexModel(
             UserManager<User> userManager,
@@ -36,6 +37,7 @@ namespace LNblitz.Pages.Wallets
             else if (walletId != null)
             {
                 SelectedWallet = list.FirstOrDefault(w => w.WalletId == walletId);
+                Transactions = SelectedWallet?.Transactions.OrderByDescending(t => t.CreatedAt);
             }
         }
     }
