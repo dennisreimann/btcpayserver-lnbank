@@ -21,7 +21,7 @@
         <main role="main" class="pb-3">
             <div class="row justify-content-center mb-2">
                 <div class="col text-center">
-                    <a asp-page="Index">
+                    <a asp-page="./Index">
                         <img src="~/img/btcpay-logo.svg" alt="BTCPay Server" class="mb-4" height="70" asp-append-version="true"/>
                     </a>
                     <h1 class="h2 mb-3">LNblitz</h1>
@@ -30,8 +30,8 @@
             <div class="row justify-content-center mb-5">
                 <div class="col account-form">
                     <div class="modal-content border-0 p-3">
-                        <div class="modal-header text-center border-0 pb-0">
-                            <h4 class="modal-title d-inline-block">@ViewData["Title"]</h4>
+                        <div class="modal-header justify-content-center border-0 pb-0">
+                            <h4 class="modal-title">@ViewData["Title"]</h4>
                         </div>
                         <div class="modal-body">
                             @RenderBody()

@@ -1,6 +1,6 @@
 @page "/Wallets/{walletId}/Transactions/Details/{transactionId}"
 @using BTCPayServer.Lightning
-@model LNblitz.Pages.Wallets.Transactions.DetailsModel
+@model LNblitz.Pages.Transactions.DetailsModel
 
 @{
     ViewData["Title"] = Model.Transaction.Description;
@@ -79,5 +79,5 @@
 </div>
 
 <p>
-    <a asp-page="/Index" asp-route-walletId="@Model.WalletId" class="text-secondary">Back to Wallet</a>
+    <a asp-page="/Wallets/Index" asp-route-walletId="@Model.WalletId" class="text-secondary">Back to Wallet</a>
 </p>

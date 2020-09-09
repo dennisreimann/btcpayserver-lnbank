@@ -1,8 +1,8 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Identity;
 using LNblitz.Data.Models;
 using LNblitz.Services;
 
@@ -10,13 +10,11 @@ namespace LNblitz.Pages.Wallets
 {
     public class CreateModel : PageModel
     {
-        private readonly UserManager<User> _userManager;
         private readonly WalletService _walletService;
         public Wallet Wallet { get; set; }
 
-        public CreateModel(UserManager<User> userManager, WalletService walletService)
+        public CreateModel(WalletService walletService)
         {
-            _userManager = userManager;
             _walletService = walletService;
         }
 
@@ -29,7 +27,7 @@ namespace LNblitz.Pages.Wallets
         {
             if (!ModelState.IsValid) return Page();
 
-            var userId = _userManager.GetUserId(User);
+            var userId = User.Claims.First(c => c.Type == "UserId").Value;
             Wallet = new Wallet
             {
                 UserId = userId,

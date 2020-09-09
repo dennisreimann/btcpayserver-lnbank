@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using LNblitz.Data;
-using LNblitz.Data.Models;
 using LNblitz.Extensions;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace LNblitz
 {
@@ -30,8 +29,8 @@ namespace LNblitz
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                     {
+                        options.LoginPath = "/";
                         options.LogoutPath = "/logout";
-                        options.LoginPath = "/login";
                         options.Cookie.Name = "LNblitz";
                     });
             services.AddAuthorization(options =>

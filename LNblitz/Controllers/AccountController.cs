@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -12,15 +13,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace LNblitz.Pages
+namespace LNblitz.Controllers
 {
-    [AllowAnonymous]
-    public class BTCPayAccountHandler : Controller
+    public class AccountController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IOptions<LNblitzConfiguration> _config;
 
-        public BTCPayAccountHandler(
+        public AccountController(
             ApplicationDbContext dbContext,
             IOptions<LNblitzConfiguration> config)
         {
@@ -32,26 +32,29 @@ namespace LNblitz.Pages
         [HttpGet("~/login")]
         public ActionResult Login()
         {
-            return Redirect("https://localhost:14142/api-keys/authorize?applicationName=LNBlitz&applicationIdentifier=lnblitz&permissions=unrestricted&redirect=https://localhost:5001/btcpay-login-callback");
-        }
+            var appName = _config.Value.AppName;
+            var appIdentifier = appName.ToLower();
+            var permissions = "unrestricted"; // TODO: Restrict permissions
+            var redirect = $"{Request.Scheme}://{Request.Host}/login-callback";
 
-        [HttpPost("~/logout")]
-        public async Task<ActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-            return Redirect("/");
+            UriBuilder uriBuilder = new UriBuilder(_config.Value.Endpoint)
+            {
+                Path = "api-keys/authorize",
+                Query = $"applicationName={appName}&applicationIdentifier={appIdentifier}&permissions={permissions}&redirect={redirect}"
+            };
+            return Redirect(uriBuilder.ToString());
         }
 
         [AllowAnonymous]
-        [HttpPost("~/btcpay-login-callback")]
-        public async Task<IActionResult> LoginCallback(string key, string[] permissions, string user)
+        [HttpPost("~/login-callback")]
+        public async Task<IActionResult> LoginCallback(string key, string user)
         {
             var client = new BTCPayServerClient(_config.Value.Endpoint, key);
             var result = await client.GetCurrentUser();
 
             if (result.Id != user)
             {
+                // TODO: Inform user about what's wrong
                 return BadRequest();
             }
 
@@ -84,11 +87,9 @@ namespace LNblitz.Pages
                 new Claim("UserId", ourUser.UserId),
             };
 
-            var claimsIdentity = new ClaimsIdentity(
-                claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
             // TODO: https://docs.microsoft.com/en-us/aspnet/core/security/authentication/cookie?view=aspnetcore-3.1#create-an-authentication-cookie
-
             var authProperties = new AuthenticationProperties();
 
             await HttpContext.SignInAsync(
@@ -96,7 +97,15 @@ namespace LNblitz.Pages
                 new ClaimsPrincipal(claimsIdentity),
                 authProperties);
 
-            return RedirectToPage("/Index");
+            return RedirectToPage("/Wallets/Index");
+        }
+
+        [HttpPost("~/logout")]
+        public async Task<ActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            return Redirect("/");
         }
     }
 }

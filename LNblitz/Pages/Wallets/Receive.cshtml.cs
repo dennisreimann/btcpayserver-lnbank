@@ -1,18 +1,17 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using LNblitz.Data.Models;
 using LNblitz.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace LNblitz.Pages.Wallets.Transactions
+namespace LNblitz.Pages.Wallets
 {
     public class ReceiveModel : PageModel
     {
-        private readonly UserManager<User> _userManager;
         private readonly WalletService _walletService;
         public Wallet Wallet { get; set; }
         [BindProperty]
@@ -22,15 +21,14 @@ namespace LNblitz.Pages.Wallets.Transactions
         [Required]
         public long Amount { get; set; }
 
-        public ReceiveModel(UserManager<User> userManager, WalletService walletService)
+        public ReceiveModel(WalletService walletService)
         {
-            _userManager = userManager;
             _walletService = walletService;
         }
 
         public async Task<IActionResult> OnGet(string walletId)
         {
-            var userId = _userManager.GetUserId(User);
+            var userId = User.Claims.First(c => c.Type == "UserId").Value;
             Wallet = await _walletService.GetWallet(userId, walletId);
 
             if (Wallet == null) return NotFound();
@@ -40,7 +38,7 @@ namespace LNblitz.Pages.Wallets.Transactions
 
         public async Task<IActionResult> OnPostAsync(string walletId)
         {
-            var userId = _userManager.GetUserId(User);
+            var userId = User.Claims.First(c => c.Type == "UserId").Value;
             Wallet = await _walletService.GetWallet(userId, walletId);
 
             if (Wallet == null) return NotFound();
@@ -49,7 +47,7 @@ namespace LNblitz.Pages.Wallets.Transactions
             try
             {
                 await _walletService.Receive(Wallet, Amount, Description);
-                return RedirectToPage("/Index", new { walletId });
+                return RedirectToPage("./Index", new { walletId });
             }
             catch (Exception)
             {
