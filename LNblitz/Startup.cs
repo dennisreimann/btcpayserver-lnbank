@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using LNblitz.Data;
 using LNblitz.Data.Models;
 using LNblitz.Extensions;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace LNblitz
 {
@@ -25,8 +26,14 @@ namespace LNblitz
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAppServices();
-
+            services.AddAppServices(Configuration);
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                    {
+                        options.LogoutPath = "/logout";
+                        options.LoginPath = "/login";
+                        options.Cookie.Name = "LNblitz";
+                    });
             services.AddAuthorization(options =>
                 options.FallbackPolicy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
@@ -34,13 +41,6 @@ namespace LNblitz
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<User>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-            // https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity-configuration?view=aspnetcore-3.1#cookie-settings
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.Cookie.Name = "LNblitz";
-            });
             services.AddControllersWithViews();
 
             IMvcBuilder builder = services.AddRazorPages();
@@ -78,6 +78,7 @@ namespace LNblitz
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+                endpoints.MapControllers();
             });
         }
     }

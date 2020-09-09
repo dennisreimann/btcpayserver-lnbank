@@ -1,27 +1,10 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using LNblitz.Data.Models
-@inject SignInManager<User> SignInManager
-@inject UserManager<User> UserManager
 
 <ul class="navbar-nav">
-    @if (SignInManager.IsSignedIn(User))
-    {
-        <li class="nav-item">
-            <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Account</a>
-        </li>
-        <li class="nav-item">
-            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/">
-                <button type="submit" class="btn nav-link" style="margin-top:1px;">Logout</button>
-            </form>
-        </li>
-    }
-    else
-    {
-        <li class="nav-item">
-            <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
-        </li>
-    }
+      <li class="nav-item">
+          <form class="form-inline" method="post" asp-controller="BTCPayAccountHandler" asp-action="Logout">
+              <button type="submit" class="btn nav-link" style="margin-top:1px;">Logout</button>
+          </form>
+      </li>
 </ul>
