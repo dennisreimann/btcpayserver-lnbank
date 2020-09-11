@@ -294,4 +294,4 @@ BTCPayServer/wwwroot/bundles/*
 
 .vscode
 BTCPayServer/testpwd
-/LNblitz/app.db
+/LNblitz/app.db*
