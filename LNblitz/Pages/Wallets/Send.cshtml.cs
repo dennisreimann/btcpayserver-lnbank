@@ -14,8 +14,8 @@ namespace LNblitz.Pages.Wallets
 {
     public class SendModel : PageModel
     {
-        private readonly WalletService _walletService;
         private readonly ILogger _logger;
+        private readonly WalletService _walletService;
         public Wallet Wallet { get; set; }
         public BOLT11PaymentRequest Bolt11 { get; set; }
         [BindProperty]
@@ -72,7 +72,7 @@ namespace LNblitz.Pages.Wallets
             }
             catch (Exception exception)
             {
-                _logger.LogError($"CreateSendTransaction failed! {exception}");
+                _logger.LogError($"Sending failed! {exception}");
                 ErrorMessage = exception.Message;
             }
 

@@ -7,11 +7,13 @@ using LNblitz.Data.Models;
 using LNblitz.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Logging;
 
 namespace LNblitz.Pages.Wallets
 {
     public class ReceiveModel : PageModel
     {
+        private readonly ILogger _logger;
         private readonly WalletService _walletService;
         public Wallet Wallet { get; set; }
         [BindProperty]
@@ -20,9 +22,13 @@ namespace LNblitz.Pages.Wallets
         [DisplayName("Amount in sats")]
         [Required]
         public long Amount { get; set; }
+        public string ErrorMessage { get; set; }
 
-        public ReceiveModel(WalletService walletService)
+        public ReceiveModel(
+            ILogger<SendModel> logger,
+            WalletService walletService)
         {
+            _logger = logger;
             _walletService = walletService;
         }
 
@@ -49,10 +55,13 @@ namespace LNblitz.Pages.Wallets
                 await _walletService.Receive(Wallet, Amount, Description);
                 return RedirectToPage("./Index", new { walletId });
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-                return Page();
+                _logger.LogError($"Receiving failed! {exception}");
+                ErrorMessage = exception.Message;
             }
+
+            return Page();
         }
     }
 }
