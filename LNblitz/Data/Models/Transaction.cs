@@ -32,6 +32,10 @@ namespace LNblitz.Data.Models
 
         public Wallet Wallet { get; set; }
 
+        private const string StatusPaid = "paid";
+        private const string StatusUnpaid = "unpaid";
+        private const string StatusExpired = "expired";
+
         public string Status
         {
             get
@@ -40,24 +44,22 @@ namespace LNblitz.Data.Models
                 {
                     if (AmountSettled > Amount) return "overpaid";
                     if (AmountSettled < Amount) return "partially paid";
-                    return "paid";
+                    return StatusPaid;
                 }
 
                 if (ExpiresAt <= DateTimeOffset.UtcNow)
                 {
-                    return "expired";
+                    return StatusExpired;
                 }
 
-                return "unpaid";
+                return StatusUnpaid;
             }
         }
 
-        public DateTimeOffset Date
-        {
-            get
-            {
-                return PaidAt ?? CreatedAt;
-            }
-        }
+        public bool IsPaid => Status == StatusPaid;
+        public bool IsUnpaid => Status == StatusUnpaid;
+        public bool IsExpired => Status == StatusExpired;
+
+        public DateTimeOffset Date => PaidAt ?? CreatedAt;
     }
 }
