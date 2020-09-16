@@ -11,6 +11,7 @@ namespace LNblitz.Data.Models
         public string BTCPayUserId { get; set; }
 
         public string BTCPayApiKey { get; set; }
+        public bool BTCPayIsAdmin { get; set; } = false;
 
         public List<Wallet> Wallets { get; set; } = new List<Wallet>();
     }

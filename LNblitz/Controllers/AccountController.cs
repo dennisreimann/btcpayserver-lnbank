@@ -4,9 +4,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BTCPayServer.Client;
+using BTCPayServer.Client.Models;
 using LNblitz.Data;
 using LNblitz.Data.Models;
-using LNblitz.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -23,6 +23,7 @@ namespace LNblitz.Controllers
         private readonly ApplicationDbContext _dbContext;
         private readonly IOptions<LNblitzConfiguration> _config;
 
+        private static readonly string AdminRoleName = "ServerAdmin";
         private static readonly string[] RequiredPermissions = {"btcpay.user.canviewprofile"};
 
         public AccountController(
@@ -57,7 +58,6 @@ namespace LNblitz.Controllers
         public async Task<IActionResult> LoginCallback(string apiKey, string userId, string[] permissions)
         {
             var client = new BTCPayServerClient(_config.Value.Endpoint, apiKey);
-            bool verified;
             bool authorized = RequiredPermissions.All(p => permissions.Contains(p));
 
             // TODO: inform user in case of errors
@@ -66,40 +66,39 @@ namespace LNblitz.Controllers
                 return Unauthorized();
             }
 
+            ApplicationUserData userData = null;
             try
             {
-                var result = await client.GetCurrentUser();
-                verified = result.Id == userId;
+                userData = await client.GetCurrentUser();
             }
             catch (Exception exception)
             {
                 _logger.LogError($"GetCurrentUser failed! {exception}");
-                verified = false;
             }
 
-            if (!verified)
+            if (userData?.Id != userId)
             {
                 return BadRequest();
             }
 
             var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.BTCPayUserId == userId);
+            bool isAdmin = true; // TODO: Use upcoming userData.Roles.Contains(AdminRoleName);
 
             if (user != null)
             {
-                if (user.BTCPayApiKey != apiKey)
-                {
-                    var entry = _dbContext.Entry(user);
-                    user.BTCPayApiKey = apiKey;
-                    entry.State = EntityState.Modified;
-                    await _dbContext.SaveChangesAsync();
-                }
+                var entry = _dbContext.Entry(user);
+                user.BTCPayApiKey = apiKey;
+                user.BTCPayIsAdmin = isAdmin;
+                entry.State = EntityState.Modified;
+                await _dbContext.SaveChangesAsync();
             }
             else
             {
                 user = new User
                 {
                     BTCPayUserId = userId,
-                    BTCPayApiKey = apiKey
+                    BTCPayApiKey = apiKey,
+                    BTCPayIsAdmin = isAdmin
                 };
 
                 await _dbContext.Users.AddAsync(user);
