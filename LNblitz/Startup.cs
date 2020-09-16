@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using LNblitz.Data;
 using LNblitz.Extensions;
+using LNblitz.Hubs;
 
 namespace LNblitz
 {
@@ -48,6 +49,8 @@ namespace LNblitz
             {
                 builder.AddRazorRuntimeCompilation();
             }
+
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,6 +81,7 @@ namespace LNblitz
             {
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
+                endpoints.MapHub<InvoiceHub>("/InvoiceHub");
             });
         }
     }

@@ -6,6 +6,8 @@ using BTCPayServer.Lightning;
 using LNblitz.Data.Models;
 using LNblitz.Data.Queries;
 using LNblitz.Data.Services;
+using LNblitz.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using NBitcoin;
 using Transaction = LNblitz.Data.Models.Transaction;
@@ -17,15 +19,18 @@ namespace LNblitz.Services
         private readonly ILogger _logger;
         private readonly BTCPayService _btcpayService;
         private readonly WalletManager _walletManager;
+        private readonly IHubContext<InvoiceHub> _invoiceHub;
 
         public WalletService(
             ILogger<WalletService> logger,
             BTCPayService btcpayService,
-            WalletManager walletManager)
+            WalletManager walletManager,
+            IHubContext<InvoiceHub> invoiceHub)
         {
             _logger = logger;
             _btcpayService = btcpayService;
             _walletManager = walletManager;
+            _invoiceHub = invoiceHub;
         }
 
         public async Task<IEnumerable<Wallet>> GetWallets(string userId)
@@ -119,6 +124,7 @@ namespace LNblitz.Services
                 transaction.AmountSettled = invoice.AmountReceived;
                 transaction.PaidAt = invoice.PaidAt;
 
+                await _invoiceHub.Clients.All.SendAsync("Message", $"Transaction {transaction.TransactionId} ({invoice.Id}) paid");
                 await _walletManager.UpdateTransaction(transaction);
             }
         }

@@ -1,4 +1,6 @@
-﻿// Theme Switch
+﻿"use strict";
+
+// Theme Switch
 const COLOR_MODES = ["light", "dark"];
 const THEME_ATTR = "data-btcpay-theme";
 const STORE_ATTR = "btcpay-theme";
@@ -23,3 +25,25 @@ document.querySelectorAll(".btcpay-theme-switch").forEach(function (link) {
         setColorMode(mode);
     });
 });
+
+// SignalR
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/InvoiceHub")
+    .withAutomaticReconnect()
+    .build();
+
+connection.on("Message", function (message) {
+    console.log("SignalR message", message);
+});
+
+connection.start().then(function () {
+    console.log("SignalR connected");
+}).catch(function (err) {
+    return console.error(err.toString());
+});
+
+window.send = function(message) {
+    connection.invoke("SendMessage", message).catch(function (err) {
+        return console.error(err.toString());
+    });
+};
