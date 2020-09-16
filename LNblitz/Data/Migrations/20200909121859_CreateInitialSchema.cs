@@ -13,7 +13,7 @@ namespace LNblitz.Data.Migrations
                 {
                     UserId = table.Column<string>(nullable: false),
                     BTCPayUserId = table.Column<string>(nullable: true),
-                    AccessToken = table.Column<string>(nullable: true)
+                    BTCPayApiKey = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

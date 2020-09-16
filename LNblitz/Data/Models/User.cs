@@ -10,7 +10,7 @@ namespace LNblitz.Data.Models
         
         public string BTCPayUserId { get; set; }
 
-        public string AccessToken { get; set; }
+        public string BTCPayApiKey { get; set; }
 
         public List<Wallet> Wallets { get; set; } = new List<Wallet>();
     }

@@ -63,7 +63,7 @@ namespace LNblitz.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("AccessToken")
+                    b.Property<string>("BTCPayApiKey")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("BTCPayUserId")

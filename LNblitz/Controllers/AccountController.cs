@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BTCPayServer.Client;
@@ -11,19 +12,25 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace LNblitz.Controllers
 {
     public class AccountController : Controller
     {
+        private readonly ILogger<AccountController> _logger;
         private readonly ApplicationDbContext _dbContext;
         private readonly IOptions<LNblitzConfiguration> _config;
 
+        private static readonly string[] RequiredPermissions = {"btcpay.user.canviewprofile"};
+
         public AccountController(
+            ILogger<AccountController> logger,
             ApplicationDbContext dbContext,
             IOptions<LNblitzConfiguration> config)
         {
+            _logger = logger;
             _dbContext = dbContext;
             _config = config;
         }
@@ -34,57 +41,74 @@ namespace LNblitz.Controllers
         {
             var appName = _config.Value.AppName;
             var appIdentifier = appName.ToLower();
-            var permissions = "unrestricted"; // TODO: Restrict permissions
             var redirect = $"{Request.Scheme}://{Request.Host}/login-callback";
 
             UriBuilder uriBuilder = new UriBuilder(_config.Value.Endpoint)
             {
                 Path = "api-keys/authorize",
-                Query = $"applicationName={appName}&applicationIdentifier={appIdentifier}&permissions={permissions}&redirect={redirect}"
+                Query = $"applicationName={appName}&applicationIdentifier={appIdentifier}&redirect={redirect}"
             };
+            uriBuilder.Query += RequiredPermissions.Aggregate("", (res, p) => res + $"&permissions={p}");
             return Redirect(uriBuilder.ToString());
         }
 
         [AllowAnonymous]
         [HttpPost("~/login-callback")]
-        public async Task<IActionResult> LoginCallback(string key, string user)
+        public async Task<IActionResult> LoginCallback(string apiKey, string userId, string[] permissions)
         {
-            var client = new BTCPayServerClient(_config.Value.Endpoint, key);
-            var result = await client.GetCurrentUser();
+            var client = new BTCPayServerClient(_config.Value.Endpoint, apiKey);
+            bool verified;
+            bool authorized = RequiredPermissions.All(p => permissions.Contains(p));
 
-            if (result.Id != user)
+            // TODO: inform user in case of errors
+            if (!authorized)
             {
-                // TODO: Inform user about what's wrong
+                return Unauthorized();
+            }
+
+            try
+            {
+                var result = await client.GetCurrentUser();
+                verified = result.Id == userId;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"GetCurrentUser failed! {exception}");
+                verified = false;
+            }
+
+            if (!verified)
+            {
                 return BadRequest();
             }
 
-            // TODO: Check permission suffice
+            var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.BTCPayUserId == userId);
 
-            var ourUser = await _dbContext.Users.SingleOrDefaultAsync(u => u.UserId == user);
-
-            if (ourUser != null)
+            if (user != null)
             {
-                if (ourUser.AccessToken != key)
+                if (user.BTCPayApiKey != apiKey)
                 {
-                    ourUser.AccessToken = key;
+                    var entry = _dbContext.Entry(user);
+                    user.BTCPayApiKey = apiKey;
+                    entry.State = EntityState.Modified;
                     await _dbContext.SaveChangesAsync();
                 }
             }
             else
             {
-                ourUser = new User
+                user = new User
                 {
-                    BTCPayUserId = user,
-                    AccessToken = key
+                    BTCPayUserId = userId,
+                    BTCPayApiKey = apiKey
                 };
 
-                await _dbContext.Users.AddAsync(ourUser);
+                await _dbContext.Users.AddAsync(user);
                 await _dbContext.SaveChangesAsync();
             }
 
             var claims = new List<Claim>
             {
-                new Claim("UserId", ourUser.UserId),
+                new Claim("UserId", user.UserId),
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
