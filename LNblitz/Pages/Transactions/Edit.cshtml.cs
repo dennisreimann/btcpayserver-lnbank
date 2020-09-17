@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using LNblitz.Data.Models;
-using LNblitz.Services;
+using LNblitz.Services.Wallets;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -22,7 +22,12 @@ namespace LNblitz.Pages.Transactions
         {
             var userId = User.Claims.First(c => c.Type == "UserId").Value;
             WalletId = walletId;
-            Transaction = await _walletService.GetTransaction(userId, walletId, transactionId);
+            Transaction = await _walletService.GetTransaction(new TransactionQuery
+            {
+                UserId = userId,
+                WalletId = walletId,
+                TransactionId = transactionId
+            });
 
             if (Transaction == null) return NotFound();
 
@@ -33,7 +38,12 @@ namespace LNblitz.Pages.Transactions
         {
             var userId = User.Claims.First(c => c.Type == "UserId").Value;
             WalletId = walletId;
-            Transaction = await _walletService.GetTransaction(userId, walletId, transactionId);
+            Transaction = await _walletService.GetTransaction(new TransactionQuery
+            {
+                UserId = userId,
+                WalletId = walletId,
+                TransactionId = transactionId
+            });
 
             if (!ModelState.IsValid) return Page();
             if (Transaction == null) return NotFound();

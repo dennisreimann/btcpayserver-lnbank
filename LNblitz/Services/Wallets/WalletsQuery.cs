@@ -1,9 +1,8 @@
-namespace LNblitz.Data.Queries
+namespace LNblitz.Services.Wallets
 {
-    public class WalletQuery
+    public class WalletsQuery
     {
         public string UserId { get; set; }
-        public string WalletId { get; set; }
         public bool IncludeTransactions { get; set; }
     }
 }

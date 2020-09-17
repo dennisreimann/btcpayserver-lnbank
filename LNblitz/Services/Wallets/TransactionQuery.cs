@@ -1,4 +1,4 @@
-namespace LNblitz.Data.Queries
+namespace LNblitz.Services.Wallets
 {
     public class TransactionQuery
     {

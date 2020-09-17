@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LNblitz.Data.Models;
+using LNblitz.Services.Wallets;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using LNblitz.Services;
 
 namespace LNblitz.Pages.Wallets
 {
@@ -23,7 +23,10 @@ namespace LNblitz.Pages.Wallets
         public async Task OnGetAsync(string walletId)
         {
             var userId = User.Claims.First(c => c.Type == "UserId").Value;
-            Wallets = await _walletService.GetWallets(userId);
+            Wallets = await _walletService.GetWallets(new WalletsQuery {
+                UserId = userId,
+                IncludeTransactions = true
+            });
 
             var list = Wallets.ToList();
             if (!list.Any())

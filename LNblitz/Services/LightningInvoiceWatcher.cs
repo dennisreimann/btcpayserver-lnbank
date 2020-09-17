@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using LNblitz.Services.Wallets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -10,14 +11,14 @@ namespace LNblitz.Services
 {
     public class LightningInvoiceWatcher : BackgroundService
     {
-        private readonly WalletService _walletService;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly ILogger<LightningInvoiceWatcher> _logger;
 
         public LightningInvoiceWatcher(
-            WalletService walletService,
+            IServiceScopeFactory serviceScopeFactory,
             ILogger<LightningInvoiceWatcher> logger)
         {
-            _walletService = walletService;
+            _serviceScopeFactory = serviceScopeFactory;
             _logger = logger;
         }
 
@@ -25,25 +26,25 @@ namespace LNblitz.Services
         {
             _logger.LogInformation($"{nameof(LightningInvoiceWatcher)} starting.");
 
-            await CheckInvoices(cancellationToken);
-        }
-
-        public async Task CheckInvoices(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                var transactions = await _walletService.GetPendingTransactions();
-                var list = transactions.ToList();
-                int count = list.Count();
-
-                if (count > 0)
+                using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    _logger.LogDebug($"{nameof(LightningInvoiceWatcher)} processing {count} transactions.");
+                    var walletService = scope.ServiceProvider.GetRequiredService<WalletService>();
 
-                    await Task.WhenAll(list.Select(transaction => _walletService.CheckPendingTransaction(transaction, stoppingToken)));
-                }
+                    var transactions = await walletService.GetPendingTransactions();
+                    var list = transactions.ToList();
+                    int count = list.Count();
 
-                await Task.Delay(5_000, stoppingToken);
+                    if (count > 0)
+                    {
+                        _logger.LogDebug($"{nameof(LightningInvoiceWatcher)} processing {count} transactions.");
+
+                        await Task.WhenAll(list.Select(transaction => walletService.CheckPendingTransaction(transaction, cancellationToken)));
+                    }
+                };
+
+                await Task.Delay(5_000, cancellationToken);
             }
         }
 

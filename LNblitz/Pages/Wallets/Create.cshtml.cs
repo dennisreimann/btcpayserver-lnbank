@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using LNblitz.Data.Models;
-using LNblitz.Services;
+using LNblitz.Services.Wallets;
 
 namespace LNblitz.Pages.Wallets
 {

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using LNblitz.Data.Models;
-using LNblitz.Services;
+using LNblitz.Services.Wallets;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -35,7 +35,11 @@ namespace LNblitz.Pages.Wallets
         public async Task<IActionResult> OnGet(string walletId)
         {
             var userId = User.Claims.First(c => c.Type == "UserId").Value;
-            Wallet = await _walletService.GetWallet(userId, walletId);
+            Wallet = await _walletService.GetWallet(new WalletQuery {
+                UserId = userId,
+                WalletId = walletId,
+                IncludeTransactions = true
+            });
 
             if (Wallet == null) return NotFound();
 
@@ -45,7 +49,11 @@ namespace LNblitz.Pages.Wallets
         public async Task<IActionResult> OnPostAsync(string walletId)
         {
             var userId = User.Claims.First(c => c.Type == "UserId").Value;
-            Wallet = await _walletService.GetWallet(userId, walletId);
+            Wallet = await _walletService.GetWallet(new WalletQuery {
+                UserId = userId,
+                WalletId = walletId,
+                IncludeTransactions = true
+            });
 
             if (Wallet == null) return NotFound();
             if (!ModelState.IsValid) return Page();
