@@ -14,6 +14,7 @@ namespace LNblitz.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Setting> Settings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,6 +33,9 @@ namespace LNblitz.Data
                 .HasConversion(
                     v => v.MilliSatoshi,
                     v => new LightMoney(v));
+
+            modelBuilder.Entity<Setting>()
+                .HasKey(s => new { s.Name, s.Type });
         }
     }
 }

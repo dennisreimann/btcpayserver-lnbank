@@ -21,12 +21,12 @@ a.navbar-brand img {
   margin-right: var(--btcpay-space-s);
 }
 
-.bg-dark {
-  background-color: var(--btcpay-bg-dark) !important;
+.navbar-toggler {
+  color: inherit;
 }
 
-.onion {
-  filter: invert();
+.bg-dark {
+  background-color: var(--btcpay-bg-dark) !important;
 }
 
 .table-sm {

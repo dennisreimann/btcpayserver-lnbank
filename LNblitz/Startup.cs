@@ -35,9 +35,12 @@ namespace LNblitz
                         options.Cookie.Name = "LNblitz";
                     });
             services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireAdmin", policy => policy.RequireClaim("IsAdmin"));
                 options.FallbackPolicy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
-                    .Build());
+                    .Build();
+            });
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));

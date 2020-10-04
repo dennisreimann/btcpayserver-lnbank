@@ -9,28 +9,36 @@ namespace LNblitz.Services
 {
     public class BTCPayService
     {
+        private static readonly string CryptoCode = "BTC";
+
         private readonly BTCPayServerClient _client;
-        private readonly string _cryptoCode = "BTC";
+        private readonly Uri _baseUri;
         private readonly string _storeId;
 
         public BTCPayService(IConfiguration configuration)
         {
-            var endpoint = configuration["BTCPay:Endpoint"];
             var apiKey = configuration["BTCPay:ApiKey"];
             var storeId = configuration["BTCPay:StoreId"];
+            var endpoint = configuration["BTCPay:Endpoint"];
 
-            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
             if (apiKey == null) throw new ArgumentNullException(nameof(apiKey));
             if (storeId == null) throw new ArgumentNullException(nameof(storeId));
+            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
 
-            Uri baseUri = new Uri(endpoint);
-            _client = new BTCPayServerClient(baseUri, apiKey);
             _storeId = storeId;
+            _baseUri = new Uri(endpoint);
+            _client = new BTCPayServerClient(_baseUri, apiKey);
+        }
+
+        public async Task<ApplicationUserData> GetUserDataForApiKey(string userApiKey)
+        {
+            var client = new BTCPayServerClient(_baseUri, userApiKey);
+            return await client.GetCurrentUser();
         }
 
         public async Task<LightningInvoiceData> CreateInvoice(CreateInvoiceRequest req)
         {
-            return await _client.CreateLightningInvoice(_storeId, _cryptoCode, new CreateLightningInvoiceRequest
+            return await _client.CreateLightningInvoice(_storeId, CryptoCode, new CreateLightningInvoiceRequest
             {
                 Amount = req.Amount,
                 Description = req.Description,
@@ -39,7 +47,7 @@ namespace LNblitz.Services
         }
         public async Task PayInvoice(PayInvoiceRequest req)
         {
-            await _client.PayLightningInvoice(_storeId, _cryptoCode, new PayLightningInvoiceRequest
+            await _client.PayLightningInvoice(_storeId, CryptoCode, new PayLightningInvoiceRequest
             {
                 BOLT11 = req.PaymentRequest
             });
@@ -47,7 +55,7 @@ namespace LNblitz.Services
 
         public async Task<LightningInvoiceData> GetInvoice(string invoiceId, CancellationToken cancellationToken)
         {
-            return await _client.GetLightningInvoice(_storeId, _cryptoCode, invoiceId, cancellationToken);
+            return await _client.GetLightningInvoice(_storeId, CryptoCode, invoiceId, cancellationToken);
         }
     }
 }
