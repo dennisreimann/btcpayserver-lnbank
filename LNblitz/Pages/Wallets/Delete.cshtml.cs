@@ -1,18 +1,20 @@
 using System.Linq;
 using System.Threading.Tasks;
 using LNblitz.Data.Models;
+using LNblitz.Services.Settings;
 using LNblitz.Services.Wallets;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LNblitz.Pages.Wallets
 {
-    public class DeleteModel : PageModel
+    public class DeleteModel : BasePageModel
     {
         private readonly WalletService _walletService;
         public Wallet Wallet { get; set; }
 
-        public DeleteModel(WalletService walletService)
+        public DeleteModel(
+            WalletService walletService,
+            SettingsService settingsService) : base(settingsService)
         {
             _walletService = walletService;
         }

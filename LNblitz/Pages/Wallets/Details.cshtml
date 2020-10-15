@@ -2,7 +2,7 @@
 @model LNblitz.Pages.Wallets.DetailsModel
 
 @{
-    ViewData["Title"] = Model.Wallet.Name;
+    Model.SetTitle(Model.Wallet.Name);
 }
 
 <header class="d-flex align-items-center justify-content-between mb-3">

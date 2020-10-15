@@ -2,7 +2,7 @@
 @model LNblitz.Pages.Wallets.DeleteModel
 
 @{
-    ViewData["Title"] = $"Delete \"{Model.Wallet.Name}\"";
+    Model.SetTitle($"Delete \"{Model.Wallet.Name}\"");
 }
 
 <header class="mb-3">

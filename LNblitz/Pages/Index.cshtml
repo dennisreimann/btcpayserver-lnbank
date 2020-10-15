@@ -1,9 +1,9 @@
 @page
-@model LNblitz.Pages.Index
+@model LNblitz.Pages.IndexModel
 
 @{
     Layout = "_LayoutSimple";
-    ViewData["Title"] = "Your Lightning Bank";
+    Model.SetTitle("Your Lightning Bank");
 }
 <p class="text-center">
     @if (User.Claims.Any(c => c.Type == "UserId"))

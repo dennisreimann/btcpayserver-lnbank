@@ -4,18 +4,17 @@ using System.Threading.Tasks;
 using LNblitz.Services.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LNblitz.Pages.Settings
 {
     [Authorize("RequireAdmin")]
-    public class EditModel : PageModel
+    public class EditModel : BasePageModel
     {
         private readonly SettingsService _settingsService;
         public AppSettings App { get; set; }
         public BtcPaySettings BtcPay { get; set; }
 
-        public EditModel(SettingsService settingsService)
+        public EditModel(SettingsService settingsService) : base(settingsService)
         {
             _settingsService = settingsService;
         }

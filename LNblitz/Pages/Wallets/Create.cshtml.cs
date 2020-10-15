@@ -2,18 +2,20 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using LNblitz.Data.Models;
+using LNblitz.Services.Settings;
 using LNblitz.Services.Wallets;
 
 namespace LNblitz.Pages.Wallets
 {
-    public class CreateModel : PageModel
+    public class CreateModel : BasePageModel
     {
         private readonly WalletService _walletService;
         public Wallet Wallet { get; set; }
 
-        public CreateModel(WalletService walletService)
+        public CreateModel(
+            WalletService walletService,
+            SettingsService settingsService) : base(settingsService)
         {
             _walletService = walletService;
         }

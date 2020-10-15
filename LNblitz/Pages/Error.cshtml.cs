@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LNblitz.Pages
 {
-    public class Error : PageModel
+    public class ErrorModel : PageModel
     {
         public string RequestId { get; set; }
 

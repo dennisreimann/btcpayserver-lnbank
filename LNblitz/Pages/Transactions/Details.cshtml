@@ -3,7 +3,7 @@
 @model LNblitz.Pages.Transactions.DetailsModel
 
 @{
-    ViewData["Title"] = Model.Transaction.Description;
+    Model.SetTitle(Model.Transaction.Description);
 }
 
 <header class="d-flex align-items-center justify-content-between mb-3">

@@ -1,11 +1,13 @@
+using LNblitz.Services.Settings;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LNblitz.Pages
 {
     [AllowAnonymous]
-    public class Index : PageModel
+    public class IndexModel : BasePageModel
     {
+        public IndexModel(SettingsService settingsService) : base(settingsService) {}
+
         public void OnGet()
         {
         }

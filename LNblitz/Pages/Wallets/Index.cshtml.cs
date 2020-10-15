@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LNblitz.Data.Models;
+using LNblitz.Services.Settings;
 using LNblitz.Services.Wallets;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace LNblitz.Pages.Wallets
 {
-    public class IndexModel : PageModel
+    public class IndexModel : BasePageModel
     {
         private readonly WalletService _walletService;
         public IEnumerable<Wallet> Wallets { get; set; }
@@ -15,7 +15,8 @@ namespace LNblitz.Pages.Wallets
         public IEnumerable<Transaction> Transactions { get; set; }
 
         public IndexModel(
-            WalletService walletService)
+            WalletService walletService,
+            SettingsService settingsService) : base(settingsService)
         {
             _walletService = walletService;
         }

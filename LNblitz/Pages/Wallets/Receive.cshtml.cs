@@ -4,14 +4,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using LNblitz.Data.Models;
+using LNblitz.Services.Settings;
 using LNblitz.Services.Wallets;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
 namespace LNblitz.Pages.Wallets
 {
-    public class ReceiveModel : PageModel
+    public class ReceiveModel : BasePageModel
     {
         private readonly ILogger _logger;
         private readonly WalletService _walletService;
@@ -26,7 +26,8 @@ namespace LNblitz.Pages.Wallets
 
         public ReceiveModel(
             ILogger<SendModel> logger,
-            WalletService walletService)
+            WalletService walletService,
+            SettingsService settingsService) : base(settingsService)
         {
             _logger = logger;
             _walletService = walletService;
