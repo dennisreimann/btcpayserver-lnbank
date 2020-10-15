@@ -7,10 +7,15 @@ namespace LNblitz.Pages
     public class BasePageModel : PageModel
     {
         public string AppName { get; }
+        public bool NeedsSettings { get; }
 
         public BasePageModel(SettingsService settingsService)
         {
             AppName = settingsService.App.Name;
+            NeedsSettings =
+                string.IsNullOrEmpty(settingsService.BtcPay.Endpoint) ||
+                string.IsNullOrEmpty(settingsService.BtcPay.StoreId) ||
+                string.IsNullOrEmpty(settingsService.BtcPay.ApiKey);
         }
 
         public void SetTitle(string title) { ViewData["Title"] = title; }
