@@ -1,46 +1,59 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using LNblitz.Data.Models;
+using LNblitz.Extensions;
+using LNblitz.Services.Settings;
 using LNblitz.Services.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace LNblitz.Controllers
 {
     public class AccountController : Controller
     {
         private readonly ILogger<AccountController> _logger;
-        private readonly IOptions<LNblitzConfiguration> _config;
+        private readonly SettingsService _settingsService;
         private readonly UserService _userService;
 
         private static readonly string[] RequiredPermissions = {"btcpay.user.canviewprofile"};
 
         public AccountController(
             ILogger<AccountController> logger,
-            IOptions<LNblitzConfiguration> config,
+            SettingsService settingsService,
             UserService userService)
         {
             _logger = logger;
-            _config = config;
             _userService = userService;
+            _settingsService = settingsService;
         }
 
         [AllowAnonymous]
         [HttpGet("~/login")]
-        public ActionResult Login()
+        public ActionResult Login(LoginViewModel model)
         {
-            var appName = _config.Value.AppName;
-            var appIdentifier = appName.ToLower();
-            var redirect = $"{Request.Scheme}://{Request.Host}/login-callback";
+            var appName = _settingsService.App.Name;
+            var appIdentifier = appName.GenerateSlug();
+            var endpoint = _settingsService.BtcPay.Endpoint ?? model.Endpoint;
 
-            UriBuilder uriBuilder = new UriBuilder(_config.Value.Endpoint)
+            if (string.IsNullOrWhiteSpace(endpoint))
+            {
+                return View(new LoginViewModel
+                {
+                    AppName = appName,
+                    Endpoint = endpoint
+                });
+            }
+
+            var redirect = $"{Request.Scheme}://{Request.Host}/login-callback";
+            UriBuilder uriBuilder = new UriBuilder(endpoint)
             {
                 Path = "api-keys/authorize",
                 Query = $"applicationName={appName}&applicationIdentifier={appIdentifier}&redirect={redirect}"
@@ -98,5 +111,13 @@ namespace LNblitz.Controllers
 
             return Redirect("/");
         }
+    }
+
+    public class LoginViewModel
+    {
+        public string AppName { get; set; }
+        [Required]
+        [DisplayName("BTCPay Server URL")]
+        public string Endpoint { get; set; }
     }
 }
