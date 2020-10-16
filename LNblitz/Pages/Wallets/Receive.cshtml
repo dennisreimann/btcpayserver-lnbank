@@ -31,12 +31,12 @@
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+                <small asp-validation-for="Description" class="form-text text-danger"></small>
             </div>
             <div class="form-group">
                 <label asp-for="Amount" class="control-label"></label>
                 <input asp-for="Amount" class="form-control text-right" type="number" style="width:15ch;" required />
-                <span asp-validation-for="Amount" class="text-danger"></span>
+                <small asp-validation-for="Amount" class="form-text text-danger"></small>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create invoice" class="btn btn-primary" />

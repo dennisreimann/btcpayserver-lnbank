@@ -116,8 +116,8 @@ namespace LNblitz.Controllers
     public class LoginViewModel
     {
         public string AppName { get; set; }
-        [Required]
         [DisplayName("BTCPay Server URL")]
+        [Required]
         public string Endpoint { get; set; }
     }
 }

@@ -1,8 +1,12 @@
+@using Microsoft.AspNetCore.Hosting;
+@using Microsoft.Extensions.Hosting
+@inject IWebHostEnvironment Env;
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" @(Env.IsDevelopment() ? " data-devenv" : "")>
 <head>
     <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <title>@ViewData["Title"] - @Model.AppName</title>
     <link href="~/css/btcpayserver-variables.css" rel="stylesheet" asp-append-version="true">
     <link href="~/css/btcpayserver-bootstrap.css" rel="stylesheet" asp-append-version="true">
@@ -18,6 +22,12 @@
 </head>
 <body>
     @RenderBody()
+    <footer class="btcpay-footer footer">
+        <div class="container d-flex align-items-center justify-content-between">
+            <small>@Env.ApplicationName made with 💚 by <a href="https://bitcoindevlist.com/dennis-reimann/">d11n</a></small>
+            <small>@Env.EnvironmentName</small>
+        </div>
+    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js" asp-append-version="true"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
     <script src="~/lib/signalr/dist/browser/signalr.js" asp-append-version="true"></script>
