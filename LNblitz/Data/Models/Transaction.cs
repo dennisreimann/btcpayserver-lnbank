@@ -35,6 +35,8 @@ namespace LNblitz.Data.Models
         private const string StatusPaid = "paid";
         private const string StatusUnpaid = "unpaid";
         private const string StatusExpired = "expired";
+        private const string StatusOverpaid = "overpaid";
+        private const string StatusPaidPartially = "partially paid";
 
         public string Status
         {
@@ -42,8 +44,8 @@ namespace LNblitz.Data.Models
             {
                 if (AmountSettled != null && AmountSettled > 0)
                 {
-                    if (AmountSettled > Amount) return "overpaid";
-                    if (AmountSettled < Amount) return "partially paid";
+                    if (AmountSettled > Amount) return StatusOverpaid;
+                    if (AmountSettled < Amount) return StatusPaidPartially;
                     return StatusPaid;
                 }
 
@@ -59,6 +61,8 @@ namespace LNblitz.Data.Models
         public bool IsPaid => Status == StatusPaid;
         public bool IsUnpaid => Status == StatusUnpaid;
         public bool IsExpired => Status == StatusExpired;
+        public bool IsOverpaid => Status == StatusOverpaid;
+        public bool IsPaidPartially => Status == StatusPaidPartially;
 
         public DateTimeOffset Date => PaidAt ?? CreatedAt;
     }

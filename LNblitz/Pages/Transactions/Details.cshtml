@@ -20,62 +20,39 @@
 </header>
 
 <div>
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Transaction.Amount)
-        </dt>
-        <dd class="col-sm-10">
+    @if (Model.Transaction.IsUnpaid)
+    {
+        <h2 class="text-muted">
             @Model.Transaction.Amount.ToUnit(LightMoneyUnit.Satoshi)
             sats
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Transaction.AmountSettled)
-        </dt>
-        <dd class="col-sm-10">
-            @if (Model.Transaction.AmountSettled != null)
-            {
-                <span class="text-@(Model.Transaction.AmountSettled > 0 ? "success" : "danger")">
-                    @Model.Transaction.AmountSettled.ToUnit(LightMoneyUnit.Satoshi) sats
-                </span>
-            }
-            else
-            {
-                <span class="text-muted">
-                    @Html.DisplayFor(t => Model.Transaction.Status)
-                </span>
-            }
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Transaction.PaymentRequest)
-        </dt>
-        <dd class="col-sm-10 text-break">
-            @Html.DisplayFor(model => model.Transaction.PaymentRequest)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Transaction.Status)
-        </dt>
-        <dd class="col-sm-10">
+            @Html.DisplayFor(t => Model.Transaction.Status)
+        </h2>
+        @if (!Model.Transaction.IsExpired)
+        {
+            <h3 class="h4 text-muted">
+                Expires @Html.DisplayFor(model => model.Transaction.ExpiresAt)
+            </h3>
+        }
+    }
+    else
+    {
+        <h2 class="text-@(Model.Transaction.AmountSettled > 0 ? "success" : "danger")">
+            @Model.Transaction.AmountSettled.ToUnit(LightMoneyUnit.Satoshi)
+            sats
             @Html.DisplayFor(model => model.Transaction.Status)
-        </dd>
-        @if (Model.Transaction.PaidAt != null)
+        </h2>
+        @if (Model.Transaction.IsPaid)
         {
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Transaction.PaidAt)
-            </dt>
-            <dd class="col-sm-10">
+            <h3 class="h4 text-muted">
+                Paid at
                 @Html.DisplayFor(model => model.Transaction.PaidAt)
-            </dd>
+            </h3>
         }
-        else
-        {
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Transaction.ExpiresAt)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Transaction.ExpiresAt)
-            </dd>
-        }
-    </dl>
+    }
+
+    <img src="/QR/@Model.Transaction.PaymentRequest" class="qrcode my-4" alt="Payment Request as QR code"/>
+
+    <pre class="payment-request mb-4">@Html.DisplayFor(model => model.Transaction.PaymentRequest)</pre>
 </div>
 
 <p>

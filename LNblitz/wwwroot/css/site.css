@@ -29,6 +29,18 @@ a.navbar-brand img {
   background-color: var(--btcpay-bg-dark) !important;
 }
 
+.qrcode {
+  max-width: 100%;
+}
+
+pre.payment-request {
+  white-space: pre-wrap;       /* css-3 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
 .table-sm {
   width: calc(100% + 1rem);
   margin: 1.5rem -.5rem;
@@ -87,8 +99,6 @@ small, .small {
   line-height: 1.4;
 }
 
-/* Sticky footer styles
--------------------------------------------------- */
 html {
   font-size: 14px;
 }
@@ -97,22 +107,6 @@ html {
   html {
     font-size: 16px;
   }
-}
-
-.border-top {
-  border-top: 1px solid #e5e5e5;
-}
-.border-bottom {
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
-}
-
-button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
 }
 
 /* Sticky footer styles
@@ -141,7 +135,6 @@ body {
 .validation-summary-errors ul {
   padding-left: 1rem;
 }
-
 
 /* Firefox */
 input[type=number].hide-number-spin {
