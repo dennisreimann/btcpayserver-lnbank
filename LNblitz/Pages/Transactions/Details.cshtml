@@ -20,35 +20,35 @@
 </header>
 
 <div>
-    @if (Model.Transaction.IsUnpaid)
-    {
-        <h2 class="text-muted">
-            @Model.Transaction.Amount.ToUnit(LightMoneyUnit.Satoshi)
-            sats
-            @Html.DisplayFor(t => Model.Transaction.Status)
-        </h2>
-        @if (!Model.Transaction.IsExpired)
-        {
-            <h3 class="h4 text-muted">
-                Expires @Html.DisplayFor(model => model.Transaction.ExpiresAt)
-            </h3>
-        }
-    }
-    else
+    @if (Model.Transaction.IsPaid)
     {
         <h2 class="text-@(Model.Transaction.AmountSettled > 0 ? "success" : "danger")">
             @Model.Transaction.AmountSettled.ToUnit(LightMoneyUnit.Satoshi)
             sats
             @Html.DisplayFor(model => model.Transaction.Status)
         </h2>
-        @if (Model.Transaction.IsPaid)
-        {
-            <h3 class="h4 text-muted">
-                Paid at
-                @Html.DisplayFor(model => model.Transaction.PaidAt)
-            </h3>
-        }
+        <h3 class="h4 text-muted">
+            Paid at
+            @Html.DisplayFor(model => model.Transaction.PaidAt)
+        </h3>
     }
+    else
+    {
+        <h2 class="text-@(Model.Transaction.IsExpired ? "danger" : "warning")">
+            @Model.Transaction.Amount.ToUnit(LightMoneyUnit.Satoshi)
+            sats
+            @Html.DisplayFor(t => Model.Transaction.Status)
+        </h2>
+        <h3 class="h4 text-muted">
+            @(Model.Transaction.IsExpired ? "Expired" : "Expires")
+            @Html.DisplayFor(model => model.Transaction.ExpiresAt)
+        </h3>
+    }
+
+    <div class="mt-4">
+        <button class="btn btn-primary mr-2 mb-2" type="button" data-clipboard="@Html.DisplayFor(model => model.Transaction.PaymentRequest)">Copy payment request</button>
+        <button class="btn btn-primary mr-2 mb-2" type="button" data-clipboard="@Url.PageLink("/Transactions/Share", null, new { transactionId = Model.Transaction.TransactionId })">Copy public share URL</button>
+    </div>
 
     <img src="/QR/@Model.Transaction.PaymentRequest" class="qrcode my-4" alt="Payment Request as QR code"/>
 

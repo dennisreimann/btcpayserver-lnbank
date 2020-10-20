@@ -53,7 +53,7 @@ namespace LNblitz.Pages.Transactions
             if (await TryUpdateModelAsync<Transaction>(Transaction, "transaction", t => t.Description))
             {
                 await _walletService.UpdateTransaction(Transaction);
-                return RedirectToPage("./Index", new { walletId });
+                return RedirectToPage("/Wallets/Index", new { walletId });
             }
 
             return Page();

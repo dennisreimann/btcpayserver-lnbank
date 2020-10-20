@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QRCoder;
 
@@ -5,6 +6,7 @@ namespace LNblitz.Controllers
 {
     public class QrcodeController : Controller
     {
+        [AllowAnonymous]
         [HttpGet("~/QR/{encode}")]
         public IActionResult Details(string encode)
         {

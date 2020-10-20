@@ -197,6 +197,11 @@ namespace LNblitz.Services.Wallets
 
         public async Task<Transaction> GetTransaction(TransactionQuery query)
         {
+            if (query.UserId == null && query.WalletId == null)
+            {
+                return _dbContext.Transactions.SingleOrDefault(t => t.TransactionId == query.TransactionId);
+            }
+
             var wallet = await GetWallet(new WalletQuery
             {
                 UserId = query.UserId,

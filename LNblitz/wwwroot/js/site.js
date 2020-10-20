@@ -1,49 +1,75 @@
 ﻿"use strict";
 
 // Theme Switch
-const COLOR_MODES = ["light", "dark"];
-const THEME_ATTR = "data-btcpay-theme";
-const STORE_ATTR = "btcpay-theme";
-const systemColorMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? COLOR_MODES[1] : COLOR_MODES[0];
-const userColorMode = window.localStorage.getItem(STORE_ATTR);
-const initialColorMode = COLOR_MODES.includes(userColorMode) ? userColorMode : systemColorMode;
+const COLOR_MODES = ["light", "dark"]
+const THEME_ATTR = "data-btcpay-theme"
+const STORE_ATTR = "btcpay-theme"
+const systemColorMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? COLOR_MODES[1] : COLOR_MODES[0]
+const userColorMode = window.localStorage.getItem(STORE_ATTR)
+const initialColorMode = COLOR_MODES.includes(userColorMode) ? userColorMode : systemColorMode
 
-function setColorMode (mode) {
+const setColorMode = mode => {
     if (COLOR_MODES.includes(mode)) {
-        window.localStorage.setItem(STORE_ATTR, mode);
-        document.documentElement.setAttribute(THEME_ATTR, mode);
+        window.localStorage.setItem(STORE_ATTR, mode)
+        document.documentElement.setAttribute(THEME_ATTR, mode)
     }
-};
+}
 
-setColorMode(initialColorMode);
+setColorMode(initialColorMode)
 
-document.querySelectorAll(".btcpay-theme-switch").forEach(function (link) {
-    link.addEventListener("click", function (e) {
-        e.preventDefault();
-        const current = document.documentElement.getAttribute(THEME_ATTR) || COLOR_MODES[0];
-        const mode = current === COLOR_MODES[0] ? COLOR_MODES[1] : COLOR_MODES[0];
-        setColorMode(mode);
-    });
-});
+// Clipboard
+window.copyToClipboard = (e, text) => {
+    if (navigator.clipboard) {
+        e.preventDefault()
+        const item = e.currentTarget
+        const data = text || item.getAttribute('data-clipboard')
+        const confirm = item.querySelector('[data-clipboard-confirm]') || item
+        const message = confirm.getAttribute('data-clipboard-confirm') || 'Copied ✔'
+        if (!confirm.dataset.clipboardInitialText) {
+            confirm.dataset.clipboardInitialText = confirm.innerText
+            confirm.style.minWidth = confirm.clientWidth + 'px'
+        }
+        navigator.clipboard.writeText(data).then(() => {
+            confirm.innerText = message
+            setTimeout(function(){ confirm.innerText = confirm.dataset.clipboardInitialText; }, 2500)
+        })
+        item.blur()
+    }
+}
+
+window.copyUrlToClipboard = e => {
+    window.copyToClipboard(e,  window.location)
+}
 
 // SignalR
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/InvoiceHub")
     .withAutomaticReconnect()
-    .build();
+    .build()
 
-connection.on("Message", function (message) {
-    console.log("SignalR message", message);
-});
+connection.on("Message", console.debug)
 
-connection.start().then(function () {
-    console.log("SignalR connected");
-}).catch(function (err) {
-    return console.error(err.toString());
-});
+connection.start()
+    .then(() => { console.log("SignalR connected") })
+    .catch(console.error)
 
-window.send = function(message) {
-    connection.invoke("SendMessage", message).catch(function (err) {
-        return console.error(err.toString());
-    });
-};
+window.send = message => {
+    connection
+        .invoke("SendMessage", message)
+        .catch(console.error)
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("[data-clipboard]").forEach(item => {
+        item.addEventListener("click", window.copyToClipboard)
+    })
+
+    document.querySelectorAll(".btcpay-theme-switch").forEach(link => {
+        link.addEventListener("click", e => {
+            e.preventDefault()
+            const current = document.documentElement.getAttribute(THEME_ATTR) || COLOR_MODES[0]
+            const mode = current === COLOR_MODES[0] ? COLOR_MODES[1] : COLOR_MODES[0]
+            setColorMode(mode)
+        })
+    })
+})

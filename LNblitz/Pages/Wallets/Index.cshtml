@@ -91,7 +91,7 @@
                                     sats
                                 </td>
                                 <td class="text-nowrap text-right">
-                                    @if (transaction.AmountSettled != null)
+                                    @if (transaction.IsPaid)
                                     {
                                         <span class="text-@(transaction.AmountSettled > 0 ? "success" : "danger")">
                                             @transaction.AmountSettled.ToUnit(LightMoneyUnit.Satoshi) sats
@@ -99,7 +99,7 @@
                                     }
                                     else
                                     {
-                                        <span class="text-muted">
+                                        <span class="text-@(transaction.IsExpired ? "danger" : "warning")">
                                             @Html.DisplayFor(t => transaction.Status)
                                         </span>
                                     }
