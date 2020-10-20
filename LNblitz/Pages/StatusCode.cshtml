@@ -1,0 +1,17 @@
+@page "/StatusCode/{code}"
+@model LNblitz.Pages.StatusCodeModel
+
+@{
+    Layout = "_LayoutSimple";
+    Model.SetTitle($"Error {Model.ErrorStatusCode}");
+}
+
+<p class="text-center text-danger">
+    @Model.ErrorDescription
+</p>
+<p class="text-center mt-4 mb-0">
+    <a asp-page="/Index" class="btn btn-outline-secondary">
+        Back home
+    </a>
+</p>
+

@@ -71,10 +71,9 @@ namespace LNblitz
                 // You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseStatusCodePagesWithReExecute("/StatusCode/{0}");
             app.UseRouting();
 
             app.UseAuthentication();
