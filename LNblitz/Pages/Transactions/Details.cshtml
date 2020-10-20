@@ -19,7 +19,7 @@
     </div>
 </header>
 
-<div>
+<div class="mb-4">
     @if (Model.Transaction.IsPaid)
     {
         <h2 class="text-@(Model.Transaction.AmountSettled > 0 ? "success" : "danger")">
@@ -43,16 +43,19 @@
             @(Model.Transaction.IsExpired ? "Expired" : "Expires")
             @Html.DisplayFor(model => model.Transaction.ExpiresAt)
         </h3>
+
+        @if (!Model.Transaction.IsExpired)
+        {
+            <div class="mt-4">
+                <button class="btn btn-primary mr-2 mb-2" type="button" data-clipboard="@Html.DisplayFor(model => model.Transaction.PaymentRequest)">Copy payment request</button>
+                <button class="btn btn-primary mr-2 mb-2" type="button" data-clipboard="@Url.PageLink("/Transactions/Share", null, new { transactionId = Model.Transaction.TransactionId })">Copy public share URL</button>
+            </div>
+
+            <img src="/QR/@Model.Transaction.PaymentRequest" class="qrcode my-4" alt="Payment Request as QR code"/>
+
+            <pre class="payment-request">@Html.DisplayFor(model => model.Transaction.PaymentRequest)</pre>
+        }
     }
-
-    <div class="mt-4">
-        <button class="btn btn-primary mr-2 mb-2" type="button" data-clipboard="@Html.DisplayFor(model => model.Transaction.PaymentRequest)">Copy payment request</button>
-        <button class="btn btn-primary mr-2 mb-2" type="button" data-clipboard="@Url.PageLink("/Transactions/Share", null, new { transactionId = Model.Transaction.TransactionId })">Copy public share URL</button>
-    </div>
-
-    <img src="/QR/@Model.Transaction.PaymentRequest" class="qrcode my-4" alt="Payment Request as QR code"/>
-
-    <pre class="payment-request mb-4">@Html.DisplayFor(model => model.Transaction.PaymentRequest)</pre>
 </div>
 
 <p>

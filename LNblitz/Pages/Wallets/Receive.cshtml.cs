@@ -61,8 +61,9 @@ namespace LNblitz.Pages.Wallets
 
             try
             {
-                await _walletService.Receive(Wallet, Amount, Description);
-                return RedirectToPage("./Index", new { walletId });
+                var transaction = await _walletService.Receive(Wallet, Amount, Description);
+                var transactionId = transaction.TransactionId;
+                return RedirectToPage("/Transaction/Details", new { walletId, transactionId });
             }
             catch (Exception exception)
             {

@@ -27,7 +27,7 @@ namespace LNblitz.Pages.Transactions
                 TransactionId = transactionId
             });
 
-            if (Transaction == null) return NotFound();
+            if (Transaction == null || Transaction.IsPaid || Transaction.IsExpired) return NotFound();
 
             return Page();
         }
