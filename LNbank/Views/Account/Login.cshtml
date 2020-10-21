@@ -1,0 +1,23 @@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model LNbank.Controllers.LoginViewModel;
+
+@{
+    Layout = "_LayoutSimple";
+    ViewData["Title"] = "Login";
+}
+<p class="text-center">
+    This app isn't fully set up, yet. Please provide the base
+    URL of the BTCPay Server instance you can to connect to.
+</p>
+<form method="get" asp-action="Login">
+    <div class="form-group">
+        <label asp-for="Endpoint" class="control-label"></label>
+        <input asp-for="Endpoint" class="form-control" />
+        <small asp-validation-for="Endpoint" class="form-text text-danger"></small>
+    </div>
+
+    <div class="form-group text-center">
+        <input type="submit" value="Log in" class="btn btn-primary" />
+    </div>
+</form>
+

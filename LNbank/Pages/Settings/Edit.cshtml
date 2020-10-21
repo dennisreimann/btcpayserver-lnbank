@@ -1,0 +1,68 @@
+@page
+@model LNbank.Pages.Settings.EditModel
+
+@{
+    Model.SetTitle("Edit settings");
+}
+
+<header class="mb-3">
+    <h1>@ViewData["Title"]</h1>
+</header>
+
+<div class="row">
+    <div class="col-md-8 col-lg-6">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <fieldset class="mb-4">
+                <legend>Application</legend>
+                <div class="form-group">
+                    <label asp-for="App.Name" class="control-label"></label>
+                    <input asp-for="App.Name" class="form-control" />
+                    <small asp-validation-for="App.Name" class="form-text text-danger"></small>
+                </div>
+            </fieldset>
+
+            <fieldset class="mb-4">
+                <legend>BTCPay Server</legend>
+                <div class="form-group">
+                    <label asp-for="BtcPay.Endpoint" class="control-label"></label>
+                    <input asp-for="BtcPay.Endpoint" class="form-control" plaseholder/>
+                    <small asp-validation-for="BtcPay.Endpoint" class="form-text text-danger"></small>
+                    <small class="form-text text-muted">
+                        Your BTCPay Server instance URL, e.g. https://pay.mystore.com/
+                    </small>
+                </div>
+
+                <p class="mt-4 text-muted">
+                    Please set up a dedicated store for this application in your BTCPay Server.
+                    The Lightning node configured for that store will be used by this application.
+                    After you have set up the store and its Lightning node, you can generate the
+                    API key in you account settings: Pick the "Use the lightning nodes associated with
+                    your stores" and your store as permission.
+                </p>
+                <div class="form-group">
+                    <label asp-for="BtcPay.StoreId" class="control-label"></label>
+                    <input asp-for="BtcPay.StoreId" class="form-control" />
+                    <small asp-validation-for="BtcPay.StoreId" class="form-text text-danger"></small>
+                    <small class="form-text text-muted">
+                        The ID of the store you have setup.
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label asp-for="BtcPay.ApiKey" class="control-label"></label>
+                    <input asp-for="BtcPay.ApiKey" class="form-control" />
+                    <small asp-validation-for="BtcPay.ApiKey" class="form-text text-danger"></small>
+                </div>
+            </fieldset>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

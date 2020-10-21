@@ -1,0 +1,21 @@
+@page
+@model LNbank.Pages.IndexModel
+
+@{
+    Layout = "_LayoutSimple";
+    Model.SetTitle("Your Lightning Bank");
+}
+<p class="text-center">
+    @if (User.HasClaim(c => c.Type == "UserId"))
+    {
+        <a asp-page="/Wallets/Index" class="btn btn-primary">
+            Access your wallets
+        </a>
+    }
+    else
+    {
+        <a asp-controller="Account" asp-action="Login" class="btn btn-primary">
+            Sign in to your account
+        </a>
+    }
+</p>
