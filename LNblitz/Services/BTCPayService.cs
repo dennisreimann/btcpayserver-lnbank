@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BTCPayServer.Client;
 using BTCPayServer.Client.Models;
-using Microsoft.Extensions.Configuration;
+using LNblitz.Services.Settings;
 
 namespace LNblitz.Services
 {
@@ -15,11 +15,11 @@ namespace LNblitz.Services
         private readonly Uri _baseUri;
         private readonly string _storeId;
 
-        public BTCPayService(IConfiguration configuration)
+        public BTCPayService(SettingsService settingsService)
         {
-            var apiKey = configuration["BTCPay:ApiKey"];
-            var storeId = configuration["BTCPay:StoreId"];
-            var endpoint = configuration["BTCPay:Endpoint"];
+            var apiKey = settingsService.BtcPay.ApiKey;
+            var storeId = settingsService.BtcPay.StoreId;
+            var endpoint = settingsService.BtcPay.Endpoint;
 
             if (apiKey == null) throw new ArgumentNullException(nameof(apiKey));
             if (storeId == null) throw new ArgumentNullException(nameof(storeId));
