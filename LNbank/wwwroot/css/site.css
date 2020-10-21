@@ -29,8 +29,9 @@ a.navbar-brand img {
   background-color: var(--btcpay-bg-dark) !important;
 }
 
-.qrcode {
-  max-width: 100%;
+.qrcode,
+pre.payment-request{
+  max-width: 445px;
 }
 
 pre.payment-request {

@@ -5,5 +5,6 @@ namespace LNbank.Services.Wallets
         public string UserId { get; set; }
         public string WalletId { get; set; }
         public string TransactionId { get; set; }
+        public string PaymentRequest { get; set; }
     }
 }

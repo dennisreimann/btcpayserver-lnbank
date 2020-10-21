@@ -7,9 +7,11 @@ using BTCPayServer.Lightning;
 using LNbank.Data;
 using LNbank.Data.Models;
 using LNbank.Hubs;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NBitcoin;
 using Transaction = LNbank.Data.Models.Transaction;
@@ -22,17 +24,22 @@ namespace LNbank.Services.Wallets
         private readonly BTCPayService _btcpayService;
         private readonly IHubContext<InvoiceHub> _invoiceHub;
         private readonly ApplicationDbContext _dbContext;
+        private readonly Network _network;
 
         public WalletService(
+            IWebHostEnvironment env,
             ILogger<WalletService> logger,
-            BTCPayService btcpayService,
             IHubContext<InvoiceHub> invoiceHub,
+            BTCPayService btcpayService,
             ApplicationDbContext dbContext)
         {
             _logger = logger;
             _btcpayService = btcpayService;
             _invoiceHub = invoiceHub;
             _dbContext = dbContext;
+
+            // TODO: Configure network properly
+            _network = env.IsDevelopment() ? Network.RegTest : Network.Main;
         }
 
         public async Task<IEnumerable<Wallet>> GetWallets(WalletsQuery query)
@@ -60,7 +67,7 @@ namespace LNbank.Services.Wallets
             return await queryable.FirstOrDefaultAsync();
         }
 
-        public async Task<Data.Models.Transaction> Receive(Wallet wallet, long sats, string description)
+        public async Task<Transaction> Receive(Wallet wallet, long sats, string description)
         {
             var data = await _btcpayService.CreateInvoice(new CreateInvoiceRequest
             {
@@ -68,7 +75,7 @@ namespace LNbank.Services.Wallets
                 Description = description
             });
 
-            var entry = await _dbContext.Transactions.AddAsync(new Data.Models.Transaction
+            var entry = await _dbContext.Transactions.AddAsync(new Transaction
             {
                 WalletId = wallet.WalletId,
                 InvoiceId = data.Id,
@@ -82,18 +89,34 @@ namespace LNbank.Services.Wallets
             return entry.Entity;
         }
 
-        public async Task<Data.Models.Transaction> Send(Wallet wallet, BOLT11PaymentRequest bolt11, string paymentRequest)
+        public async Task<Transaction> Send(Wallet wallet, BOLT11PaymentRequest bolt11, string paymentRequest)
         {
             var amount = bolt11.MinimumAmount;
 
             if (wallet.Balance < amount)
             {
-                throw new Exception($"Insufficient balance: {wallet.Balance} msat, tried to send {amount} msat.");
+                var balanceSats = wallet.Balance.ToUnit(LightMoneyUnit.Satoshi);
+                var amountSats = amount.ToUnit(LightMoneyUnit.Satoshi);
+                throw new Exception($"Insufficient balance: {balanceSats} sats, tried to send {amountSats} sats.");
             }
 
-            await _btcpayService.PayInvoice(new PayInvoiceRequest { PaymentRequest = paymentRequest });
+            // pay via the node and fall back to internal payment
+            Transaction internalReceivingTransaction = null;
+            try
+            {
+                await _btcpayService.PayInvoice(new PayInvoiceRequest {PaymentRequest = paymentRequest});
+            }
+            catch (Exception)
+            {
+                internalReceivingTransaction = await GetTransaction(new TransactionQuery {PaymentRequest = paymentRequest});
+                if (internalReceivingTransaction == null) throw;
+            }
 
-            var entry = await _dbContext.Transactions.AddAsync(new Data.Models.Transaction
+            var now = DateTimeOffset.UtcNow;
+
+            // https://docs.microsoft.com/en-us/ef/core/saving/transactions#controlling-transactions
+            await using var dbTransaction = await _dbContext.Database.BeginTransactionAsync();
+            var entry = await _dbContext.Transactions.AddAsync(new Transaction
             {
                 WalletId = wallet.WalletId,
                 PaymentRequest = paymentRequest,
@@ -101,9 +124,15 @@ namespace LNbank.Services.Wallets
                 AmountSettled = new LightMoney(amount.MilliSatoshi * -1),
                 ExpiresAt = bolt11.ExpiryDate,
                 Description = bolt11.ShortDescription,
-                PaidAt = DateTimeOffset.UtcNow
+                PaidAt = now
             });
             await _dbContext.SaveChangesAsync();
+
+            if (internalReceivingTransaction != null)
+            {
+                await MarkTransactionPaid(internalReceivingTransaction, amount, now);
+            }
+            await dbTransaction.CommitAsync();
 
             return entry.Entity;
         }
@@ -132,7 +161,7 @@ namespace LNbank.Services.Wallets
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Data.Models.Transaction>> GetTransactions(TransactionsQuery query)
+        public async Task<IEnumerable<Transaction>> GetTransactions(TransactionsQuery query)
         {
             var queryable = _dbContext.Transactions.AsQueryable();
 
@@ -170,7 +199,7 @@ namespace LNbank.Services.Wallets
             return await queryable.ToListAsync();
         }
 
-        public async Task<IEnumerable<Data.Models.Transaction>> GetPendingTransactions()
+        public async Task<IEnumerable<Transaction>> GetPendingTransactions()
         {
             return await GetTransactions(new TransactionsQuery
             {
@@ -180,25 +209,24 @@ namespace LNbank.Services.Wallets
             });
         }
 
-        public async Task CheckPendingTransaction(Data.Models.Transaction transaction, CancellationToken stoppingToken)
+        public async Task CheckPendingTransaction(Transaction transaction, CancellationToken stoppingToken)
         {
             var invoice = await _btcpayService.GetInvoice(transaction.InvoiceId, stoppingToken);
             if (invoice.Status == LightningInvoiceStatus.Paid)
             {
-                _logger.LogInformation($"Marking invoice {invoice.Id} as paid.");
-
-                transaction.AmountSettled = invoice.AmountReceived;
-                transaction.PaidAt = invoice.PaidAt;
-
-                await _invoiceHub.Clients.All.SendAsync("Message", $"Transaction {transaction.TransactionId} ({invoice.Id}) paid");
-                await UpdateTransaction(transaction);
+                MarkTransactionPaid(transaction, invoice.AmountReceived, invoice.PaidAt);
             }
         }
 
-        public async Task<Data.Models.Transaction> GetTransaction(TransactionQuery query)
+        public async Task<Transaction> GetTransaction(TransactionQuery query)
         {
             if (query.UserId == null && query.WalletId == null)
             {
+                if (query.PaymentRequest != null)
+                {
+                    return _dbContext.Transactions.SingleOrDefault(t => t.PaymentRequest == query.PaymentRequest);
+                }
+
                 return _dbContext.Transactions.SingleOrDefault(t => t.TransactionId == query.TransactionId);
             }
 
@@ -212,7 +240,7 @@ namespace LNbank.Services.Wallets
             return wallet?.Transactions.SingleOrDefault(t => t.TransactionId == query.TransactionId);
         }
 
-        public async Task<Data.Models.Transaction> UpdateTransaction(Data.Models.Transaction transaction)
+        public async Task<Transaction> UpdateTransaction(Transaction transaction)
         {
             var entry = _dbContext.Entry(transaction);
             entry.State = EntityState.Modified;
@@ -222,7 +250,7 @@ namespace LNbank.Services.Wallets
             return entry.Entity;
         }
 
-        public async Task RemoveTransaction(Data.Models.Transaction transaction)
+        public async Task RemoveTransaction(Transaction transaction)
         {
             _dbContext.Transactions.Remove(transaction);
             await _dbContext.SaveChangesAsync();
@@ -230,8 +258,18 @@ namespace LNbank.Services.Wallets
 
         public BOLT11PaymentRequest ParsePaymentRequest(string payReq)
         {
-            // TODO: Configure network
-            return BOLT11PaymentRequest.Parse(payReq, Network.RegTest);
+            return BOLT11PaymentRequest.Parse(payReq, _network);
+        }
+
+        private async Task MarkTransactionPaid(Transaction transaction, LightMoney amountSettled, DateTimeOffset? date)
+        {
+            _logger.LogInformation($"Marking transaction {transaction.TransactionId} as paid.");
+
+            transaction.AmountSettled = amountSettled;
+            transaction.PaidAt = date;
+
+            await UpdateTransaction(transaction);
+            await _invoiceHub.Clients.All.SendAsync("Message", $"Transaction {transaction.TransactionId} paid");
         }
 
         public async ValueTask DisposeAsync()

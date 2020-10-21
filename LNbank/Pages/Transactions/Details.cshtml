@@ -34,7 +34,7 @@
     }
     else
     {
-        <h2 class="text-@(Model.Transaction.IsExpired ? "danger" : "warning")">
+        <h2 class="text-@(Model.Transaction.IsExpired ? "info" : "warning")">
             @Model.Transaction.Amount.ToUnit(LightMoneyUnit.Satoshi)
             sats
             @Html.DisplayFor(t => Model.Transaction.Status)

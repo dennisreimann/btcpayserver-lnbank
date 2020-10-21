@@ -10,7 +10,7 @@
 <div class="text-center">
     @if (Model.Transaction.IsPaid)
     {
-        <h2 class="text-@(Model.Transaction.AmountSettled > 0 ? "success" : "danger")">
+        <h2 class="text-success">
             @Model.Transaction.AmountSettled.ToUnit(LightMoneyUnit.Satoshi)
             sats
             @Html.DisplayFor(model => model.Transaction.Status)
@@ -37,5 +37,5 @@
 
     <button class="btn btn-primary my-2" type="button" data-clipboard="@Html.DisplayFor(model => model.Transaction.PaymentRequest)">Copy payment request</button>
 
-    <pre class="payment-request mb-0 text-left">@Html.DisplayFor(model => model.Transaction.PaymentRequest)</pre>
+    <pre class="payment-request d-inline-block mb-0 text-left">@Html.DisplayFor(model => model.Transaction.PaymentRequest)</pre>
 </div>

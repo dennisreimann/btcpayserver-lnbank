@@ -42,10 +42,8 @@ namespace LNbank.Data.Models
         {
             get
             {
-                if (AmountSettled != null && AmountSettled > 0)
+                if (AmountSettled != null)
                 {
-                    if (AmountSettled > Amount) return StatusOverpaid;
-                    if (AmountSettled < Amount) return StatusPaidPartially;
                     return StatusPaid;
                 }
 
@@ -59,10 +57,10 @@ namespace LNbank.Data.Models
         }
 
         public bool IsPaid => Status == StatusPaid;
-        public bool IsUnpaid => Status == StatusUnpaid;
+        public bool IsUnpaid => Status != StatusPaid;
         public bool IsExpired => Status == StatusExpired;
-        public bool IsOverpaid => Status == StatusOverpaid;
-        public bool IsPaidPartially => Status == StatusPaidPartially;
+        public bool IsOverpaid => Status == StatusPaid && AmountSettled > Amount;
+        public bool IsPaidPartially => Status == StatusPaid && AmountSettled < Amount;
 
         public DateTimeOffset Date => PaidAt ?? CreatedAt;
     }

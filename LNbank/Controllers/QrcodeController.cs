@@ -13,7 +13,7 @@ namespace LNbank.Controllers
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(encode, QRCodeGenerator.ECCLevel.Q);
             SvgQRCode qrCode = new SvgQRCode(qrCodeData);
-            string qrCodeAsSvg = qrCode.GetGraphic(10);
+            string qrCodeAsSvg = qrCode.GetGraphic(5);
             return Content(qrCodeAsSvg, "image/svg+xml");
         }
     }

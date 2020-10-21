@@ -27,11 +27,13 @@ window.copyToClipboard = (e, text) => {
         const message = confirm.getAttribute('data-clipboard-confirm') || 'Copied ✔'
         if (!confirm.dataset.clipboardInitialText) {
             confirm.dataset.clipboardInitialText = confirm.innerText
-            confirm.style.minWidth = confirm.clientWidth + 'px'
+            confirm.style.minWidth = confirm.getBoundingClientRect().width + 'px'
         }
         navigator.clipboard.writeText(data).then(() => {
             confirm.innerText = message
-            setTimeout(function(){ confirm.innerText = confirm.dataset.clipboardInitialText; }, 2500)
+            setTimeout(() => {
+                confirm.innerText = confirm.dataset.clipboardInitialText
+            }, 2500)
         })
         item.blur()
     }
@@ -50,7 +52,6 @@ const connection = new signalR.HubConnectionBuilder()
 connection.on("Message", console.debug)
 
 connection.start()
-    .then(() => { console.log("SignalR connected") })
     .catch(console.error)
 
 window.send = message => {

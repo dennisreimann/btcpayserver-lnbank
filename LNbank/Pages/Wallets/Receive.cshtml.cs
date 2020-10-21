@@ -63,7 +63,7 @@ namespace LNbank.Pages.Wallets
             {
                 var transaction = await _walletService.Receive(Wallet, Amount, Description);
                 var transactionId = transaction.TransactionId;
-                return RedirectToPage("/Transaction/Details", new { walletId, transactionId });
+                return RedirectToPage("/Transactions/Details", new { walletId, transactionId });
             }
             catch (Exception exception)
             {
