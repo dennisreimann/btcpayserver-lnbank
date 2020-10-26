@@ -1,3 +1,5 @@
+using System;
+using LNbank.Configuration;
 using LNbank.Data;
 using LNbank.Hubs;
 using Microsoft.AspNetCore.Builder;
@@ -26,7 +28,9 @@ namespace LNbank
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAppServices();
+            var appOptions = new AppOptions(Configuration);
+
+            services.AddAppServices(appOptions);
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                     {
@@ -42,8 +46,19 @@ namespace LNbank
                     .Build();
             });
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection")));
+            {
+                switch (appOptions.DatabaseType)
+                {
+                    case DatabaseType.Sqlite:
+                        options.UseSqlite(appOptions.DatabaseConnectionString);
+                        break;
+                    case DatabaseType.Postgres:
+                        options.UseNpgsql(appOptions.DatabaseConnectionString);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            });
             services.AddControllersWithViews();
 
             IMvcBuilder builder = services.AddRazorPages();

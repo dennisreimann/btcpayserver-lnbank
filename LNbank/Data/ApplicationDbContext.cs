@@ -1,6 +1,7 @@
 ﻿using BTCPayServer.Lightning;
 using LNbank.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace LNbank.Data
 {
@@ -36,6 +37,17 @@ namespace LNbank.Data
 
             modelBuilder.Entity<Setting>()
                 .HasKey(s => new { s.Name, s.Type });
+        }
+
+        public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
+        {
+            public ApplicationDbContext CreateDbContext(string[] args)
+            {
+                var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+                optionsBuilder.UseSqlite("DataSource=app.db");
+
+                return new ApplicationDbContext(optionsBuilder.Options);
+            }
         }
     }
 }

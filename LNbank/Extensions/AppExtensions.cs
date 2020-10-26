@@ -1,3 +1,4 @@
+using LNbank.Configuration;
 using LNbank.Services;
 using LNbank.Services.Settings;
 using LNbank.Services.Users;
@@ -8,8 +9,9 @@ namespace LNbank.Extensions
 {
     public static class AppExtensions
     {
-        public static void AddAppServices(this IServiceCollection collection)
+        public static void AddAppServices(this IServiceCollection collection, AppOptions appOptions)
         {
+            collection.AddSingleton<IAppOptions>(appOptions);
             collection.AddHostedService<LightningInvoiceWatcher>();
             collection.AddScoped<BTCPayService>();
             collection.AddScoped<SettingsService>();
