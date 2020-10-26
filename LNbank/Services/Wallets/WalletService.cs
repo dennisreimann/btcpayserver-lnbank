@@ -214,7 +214,7 @@ namespace LNbank.Services.Wallets
             var invoice = await _btcpayService.GetInvoice(transaction.InvoiceId, stoppingToken);
             if (invoice.Status == LightningInvoiceStatus.Paid)
             {
-                MarkTransactionPaid(transaction, invoice.AmountReceived, invoice.PaidAt);
+                await MarkTransactionPaid(transaction, invoice.AmountReceived, invoice.PaidAt);
             }
         }
 
