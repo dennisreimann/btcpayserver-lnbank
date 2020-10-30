@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 
 namespace LNbank.Controllers
 {
-    public class AccountController : Controller
+    public sealed class AccountController : Controller
     {
         private readonly ILogger<AccountController> _logger;
         private readonly SettingsService _settingsService;

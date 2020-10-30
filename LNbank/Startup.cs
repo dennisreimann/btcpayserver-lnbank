@@ -1,11 +1,10 @@
 using System;
+using Hellang.Middleware.ProblemDetails;
 using LNbank.Configuration;
 using LNbank.Data;
 using LNbank.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,20 +30,9 @@ namespace LNbank
             var appOptions = new AppOptions(Configuration);
 
             services.AddAppServices(appOptions);
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options =>
-                    {
-                        options.LoginPath = "/";
-                        options.LogoutPath = "/logout";
-                        options.Cookie.Name = "LNbank";
-                    });
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("RequireAdmin", policy => policy.RequireClaim("IsAdmin"));
-                options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
-            });
+            services.AddAppAuthentication();
+            services.AddAppAuthorization();
+
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 switch (appOptions.DatabaseType)
@@ -60,6 +48,7 @@ namespace LNbank
                 }
             });
             services.AddControllersWithViews();
+            services.AddProblemDetails();
 
             IMvcBuilder builder = services.AddRazorPages();
 
@@ -86,6 +75,7 @@ namespace LNbank
                 // You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseProblemDetails();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseStatusCodePagesWithReExecute("/StatusCode/{0}");

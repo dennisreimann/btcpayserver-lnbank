@@ -9,14 +9,14 @@ namespace LNbank.Extensions
 {
     public static class AppExtensions
     {
-        public static void AddAppServices(this IServiceCollection collection, AppOptions appOptions)
+        public static void AddAppServices(this IServiceCollection services, AppOptions appOptions)
         {
-            collection.AddSingleton<IAppOptions>(appOptions);
-            collection.AddHostedService<LightningInvoiceWatcher>();
-            collection.AddScoped<BTCPayService>();
-            collection.AddScoped<SettingsService>();
-            collection.AddScoped<WalletService>();
-            collection.AddScoped<UserService>();
+            services.AddSingleton<IAppOptions>(appOptions);
+            services.AddHostedService<LightningInvoiceWatcher>();
+            services.AddScoped<BTCPayService>();
+            services.AddScoped<SettingsService>();
+            services.AddScoped<WalletService>();
+            services.AddScoped<UserService>();
         }
     }
 }

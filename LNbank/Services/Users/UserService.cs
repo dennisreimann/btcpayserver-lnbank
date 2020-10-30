@@ -1,12 +1,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using BTCPayServer.Client;
 using BTCPayServer.Client.Models;
 using LNbank.Data;
 using LNbank.Data.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 
 namespace LNbank.Services.Users
@@ -71,6 +69,11 @@ namespace LNbank.Services.Users
             }
 
             return user;
+        }
+
+        public async Task<User> FindUserByBtcPayApiKey(string apiKey)
+        {
+            return await _dbContext.Users.SingleOrDefaultAsync(u => u.BTCPayApiKey == apiKey);
         }
     }
 }

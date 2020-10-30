@@ -4,7 +4,7 @@ using QRCoder;
 
 namespace LNbank.Controllers
 {
-    public class QrcodeController : Controller
+    public sealed class QrcodeController : Controller
     {
         [AllowAnonymous]
         [HttpGet("~/QR/{encode}")]

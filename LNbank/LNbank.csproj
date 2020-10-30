@@ -6,6 +6,7 @@
     <ItemGroup>
         <PackageReference Include="BTCPayServer.Client" Version="1.1.1" />
         <PackageReference Include="BTCPayServer.Lightning.Common" Version="1.2.1" />
+        <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="5.1.1" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.6" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.6" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.6" />
