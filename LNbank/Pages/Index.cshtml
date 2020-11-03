@@ -9,7 +9,7 @@
     Powered by BTCPay Server
 </p>
 <p class="text-center">
-    @if (User.HasClaim(c => c.Type == "UserId"))
+    @if (Model.IsSignedIn)
     {
         <a asp-page="/Wallets/Index" class="btn btn-primary">
             Access your wallets

@@ -1,3 +1,4 @@
+using System.Linq;
 using LNbank.Services.Settings;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -19,5 +20,8 @@ namespace LNbank.Pages
         }
 
         public void SetTitle(string title) { ViewData["Title"] = title; }
+        public bool IsSignedIn => User.HasClaim(c => c.Type == "UserId");
+        public bool IsAdmin => User.HasClaim("IsAdmin", "True");
+        public string UserId => IsSignedIn ? User.Claims.First(c => c.Type == "UserId").Value : null;
     }
 }

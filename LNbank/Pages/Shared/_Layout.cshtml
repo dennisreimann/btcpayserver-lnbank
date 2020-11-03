@@ -20,7 +20,7 @@
                     </li>
                 </ul>
                 <ul class="navbar-nav">
-                    @if (User.HasClaim("IsAdmin", "True"))
+                    @if (Model.IsAdmin)
                     {
                         <li class="nav-item">
                             <a class="nav-link" asp-page="/Settings/Edit">Settings</a>
@@ -54,7 +54,7 @@
     <main role="main" class="pb-3">
         @if (Model.NeedsSettings)
         {
-            if (User.HasClaim("IsAdmin", "True"))
+            if (Model.IsAdmin)
             {
                 <div class="alert alert-danger mb-5" role="alert">
                     This app isn't fully set up, yet. Please <a class="alert-link" asp-page="/Settings/Edit">provide the missing settings</a>.

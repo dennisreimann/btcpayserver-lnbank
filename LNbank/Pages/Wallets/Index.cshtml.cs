@@ -23,9 +23,8 @@ namespace LNbank.Pages.Wallets
 
         public async Task OnGetAsync(string walletId)
         {
-            var userId = User.Claims.First(c => c.Type == "UserId").Value;
             Wallets = await _walletService.GetWallets(new WalletsQuery {
-                UserId = userId,
+                UserId = UserId,
                 IncludeTransactions = true
             });
 

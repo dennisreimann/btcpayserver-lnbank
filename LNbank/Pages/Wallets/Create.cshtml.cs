@@ -29,10 +29,9 @@ namespace LNbank.Pages.Wallets
         {
             if (!ModelState.IsValid) return Page();
 
-            var userId = User.Claims.First(c => c.Type == "UserId").Value;
             Wallet = new Wallet
             {
-                UserId = userId,
+                UserId = UserId,
                 AdminKey = Guid.NewGuid().ToString(),
                 InvoiceKey = Guid.NewGuid().ToString(),
                 ReadonlyKey = Guid.NewGuid().ToString()

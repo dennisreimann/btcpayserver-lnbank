@@ -22,11 +22,10 @@ namespace LNbank.Pages.Transactions
 
         public async Task<IActionResult> OnGetAsync(string walletId, string transactionId)
         {
-            var userId = User.Claims.First(c => c.Type == "UserId").Value;
             WalletId = walletId;
             Transaction = await _walletService.GetTransaction(new TransactionQuery
             {
-                UserId = userId,
+                UserId = UserId,
                 WalletId = walletId,
                 TransactionId = transactionId
             });
@@ -38,11 +37,10 @@ namespace LNbank.Pages.Transactions
 
         public async Task<IActionResult> OnPostAsync(string walletId, string transactionId)
         {
-            var userId = User.Claims.First(c => c.Type == "UserId").Value;
             WalletId = walletId;
             Transaction = await _walletService.GetTransaction(new TransactionQuery
             {
-                UserId = userId,
+                UserId = UserId,
                 WalletId = walletId,
                 TransactionId = transactionId
             });

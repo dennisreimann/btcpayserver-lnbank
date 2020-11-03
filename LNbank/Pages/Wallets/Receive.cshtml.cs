@@ -35,9 +35,8 @@ namespace LNbank.Pages.Wallets
 
         public async Task<IActionResult> OnGet(string walletId)
         {
-            var userId = User.Claims.First(c => c.Type == "UserId").Value;
             Wallet = await _walletService.GetWallet(new WalletQuery {
-                UserId = userId,
+                UserId = UserId,
                 WalletId = walletId,
                 IncludeTransactions = true
             });
@@ -49,9 +48,8 @@ namespace LNbank.Pages.Wallets
 
         public async Task<IActionResult> OnPostAsync(string walletId)
         {
-            var userId = User.Claims.First(c => c.Type == "UserId").Value;
             Wallet = await _walletService.GetWallet(new WalletQuery {
-                UserId = userId,
+                UserId = UserId,
                 WalletId = walletId,
                 IncludeTransactions = true
             });
