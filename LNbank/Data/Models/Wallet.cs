@@ -11,7 +11,9 @@ namespace LNbank.Data.Models
     public class Wallet
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [DisplayName("Wallet ID")]
         public string WalletId { get; set; }
+        [DisplayName("User ID")]
         public string UserId { get; set; }
         [Required]
         public string Name { get; set; }
