@@ -26,13 +26,12 @@ namespace LNbank.Services.Authentication
             try
             {
                 User user = await FindUserByBtcPayApiKey(apiKey);
-                return AuthenticateUser(user);
+                return AuthenticateUser(user, AuthenticationSchemes.ApiBTCPayAPIKey);
             }
             catch (Exception exception)
             {
                 return AuthenticateResult.Fail($"Authentication failed! {exception}");
             }
-
         }
     }
 }

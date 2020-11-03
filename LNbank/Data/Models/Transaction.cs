@@ -35,8 +35,6 @@ namespace LNbank.Data.Models
         private const string StatusPaid = "paid";
         private const string StatusUnpaid = "unpaid";
         private const string StatusExpired = "expired";
-        private const string StatusOverpaid = "overpaid";
-        private const string StatusPaidPartially = "partially paid";
 
         public string Status
         {
@@ -53,6 +51,24 @@ namespace LNbank.Data.Models
                 }
 
                 return StatusUnpaid;
+            }
+        }
+
+        public LightningInvoiceStatus LightningInvoiceStatus
+        {
+            get
+            {
+                switch (Status)
+                {
+                    case StatusPaid:
+                        return LightningInvoiceStatus.Paid;
+                    case StatusUnpaid:
+                        return LightningInvoiceStatus.Unpaid;
+                    case StatusExpired:
+                        return LightningInvoiceStatus.Expired;
+                    default:
+                        throw new NotSupportedException($"'{Status}' cannot be mapped to any LightningInvoiceStatus");
+                }
             }
         }
 

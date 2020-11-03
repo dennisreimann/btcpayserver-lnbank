@@ -1,10 +1,8 @@
-using System;
-using BTCPayServer.Lightning;
-
 namespace LNbank.Services
 {
-    public class PayInvoiceRequest
+    public class LightningInvoicePayRequest
     {
+        public string WalletId { get; set; }
         public string PaymentRequest { get; set; }
     }
 }

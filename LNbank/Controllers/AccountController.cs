@@ -92,14 +92,11 @@ namespace LNbank.Controllers
                 new Claim("IsAdmin", user.BTCPayIsAdmin.ToString()),
             };
 
-            // TODO: https://docs.microsoft.com/en-us/aspnet/core/security/authentication/cookie?view=aspnetcore-3.1#create-an-authentication-cookie
-            var authProperties = new AuthenticationProperties();
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var scheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            var claimsIdentity = new ClaimsIdentity(claims, scheme);
+            var principal = new ClaimsPrincipal(claimsIdentity);
 
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity),
-                authProperties);
+            await HttpContext.SignInAsync(scheme, principal);
 
             return RedirectToPage("/Wallets/Index");
         }

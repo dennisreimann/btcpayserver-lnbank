@@ -67,12 +67,16 @@ namespace LNbank.Services.Wallets
             return await queryable.FirstOrDefaultAsync();
         }
 
-        public async Task<Transaction> Receive(Wallet wallet, long sats, string description)
+        public async Task<Transaction> Receive(Wallet wallet, long sats, string description) =>
+            await Receive(wallet, sats, description, LightningInvoiceCreateRequest.ExpiryDefault);
+
+        public async Task<Transaction> Receive(Wallet wallet, long sats, string description, TimeSpan expiry)
         {
-            var data = await _btcpayService.CreateInvoice(new CreateInvoiceRequest
+            var data = await _btcpayService.CreateLightningInvoice(new LightningInvoiceCreateRequest
             {
                 Amount = LightMoney.Satoshis(sats),
-                Description = description
+                Description = description,
+                Expiry = expiry
             });
 
             var entry = await _dbContext.Transactions.AddAsync(new Transaction
@@ -104,11 +108,17 @@ namespace LNbank.Services.Wallets
             Transaction internalReceivingTransaction = null;
             try
             {
-                await _btcpayService.PayInvoice(new PayInvoiceRequest {PaymentRequest = paymentRequest});
+                await _btcpayService.PayLightningInvoice(new LightningInvoicePayRequest
+                {
+                    PaymentRequest = paymentRequest
+                });
             }
             catch (Exception)
             {
-                internalReceivingTransaction = await GetTransaction(new TransactionQuery {PaymentRequest = paymentRequest});
+                internalReceivingTransaction = await GetTransaction(new TransactionQuery
+                {
+                    PaymentRequest = paymentRequest
+                });
                 if (internalReceivingTransaction == null) throw;
             }
 
@@ -209,9 +219,9 @@ namespace LNbank.Services.Wallets
             });
         }
 
-        public async Task CheckPendingTransaction(Transaction transaction, CancellationToken stoppingToken)
+        public async Task CheckPendingTransaction(Transaction transaction, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var invoice = await _btcpayService.GetInvoice(transaction.InvoiceId, stoppingToken);
+            var invoice = await _btcpayService.GetLightningInvoice(transaction.InvoiceId, cancellationToken);
             if (invoice.Status == LightningInvoiceStatus.Paid)
             {
                 await MarkTransactionPaid(transaction, invoice.AmountReceived, invoice.PaidAt);

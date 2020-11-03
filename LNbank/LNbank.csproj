@@ -80,6 +80,7 @@
 
     <ItemGroup>
       <Folder Include="Data\Migrations" />
+      <Folder Include="Services\BTCPay" />
       <Folder Include="wwwroot\img" />
     </ItemGroup>
 

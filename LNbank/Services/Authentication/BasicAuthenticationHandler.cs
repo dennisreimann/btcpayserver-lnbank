@@ -38,7 +38,7 @@ namespace LNbank.Services.Authentication
             try
             {
                 User user = await CreateOrUpdateBtcPayUser(userId, apiKey);
-                return AuthenticateUser(user);
+                return AuthenticateUser(user, AuthenticationSchemes.ApiBasic);
             }
             catch (Exception exception)
             {

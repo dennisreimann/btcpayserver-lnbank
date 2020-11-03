@@ -34,18 +34,17 @@ namespace LNbank.Services.Authentication
             return await _userService.FindUserByBtcPayApiKey(apiKey);
         }
 
-        protected AuthenticateResult AuthenticateUser(User user)
+        protected AuthenticateResult AuthenticateUser(User user, string scheme)
         {
             var claims = new List<Claim>
             {
                 new Claim("UserId", user.UserId),
-                new Claim("IsAdmin", user.BTCPayIsAdmin.ToString()),
+                new Claim("IsAdmin", user.BTCPayIsAdmin.ToString())
             };
 
-            var scheme = AuthenticationSchemes.ApiBasic;
             var claimsIdentity = new ClaimsIdentity(claims, scheme);
             var principal = new ClaimsPrincipal(claimsIdentity);
-            var ticket = new AuthenticationTicket( principal, scheme);
+            var ticket = new AuthenticationTicket(principal, scheme);
 
             return AuthenticateResult.Success(ticket);
         }

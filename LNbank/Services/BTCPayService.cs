@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using BTCPayServer.Client;
 using BTCPayServer.Client.Models;
+using BTCPayServer.Lightning;
 using LNbank.Services.Settings;
 
 namespace LNbank.Services
@@ -15,12 +17,13 @@ namespace LNbank.Services
         private readonly Uri _baseUri;
         private readonly string _storeId;
 
-        public BTCPayService(SettingsService settingsService)
+        public BTCPayService(SettingsService settingsService) : this(
+            settingsService.BtcPay.Endpoint, settingsService.BtcPay.StoreId, settingsService.BtcPay.ApiKey)
         {
-            var apiKey = settingsService.BtcPay.ApiKey;
-            var storeId = settingsService.BtcPay.StoreId;
-            var endpoint = settingsService.BtcPay.Endpoint;
+        }
 
+        public BTCPayService(string endpoint, string storeId, string apiKey)
+        {
             if (apiKey == null) throw new ArgumentNullException(nameof(apiKey));
             if (storeId == null) throw new ArgumentNullException(nameof(storeId));
             if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
@@ -36,7 +39,7 @@ namespace LNbank.Services
             return await client.GetCurrentUser();
         }
 
-        public async Task<LightningInvoiceData> CreateInvoice(CreateInvoiceRequest req)
+        public async Task<LightningInvoiceData> CreateLightningInvoice(LightningInvoiceCreateRequest req)
         {
             return await _client.CreateLightningInvoice(_storeId, CryptoCode, new CreateLightningInvoiceRequest
             {
@@ -45,7 +48,7 @@ namespace LNbank.Services
                 Expiry = req.Expiry
             });
         }
-        public async Task PayInvoice(PayInvoiceRequest req)
+        public async Task PayLightningInvoice(LightningInvoicePayRequest req)
         {
             await _client.PayLightningInvoice(_storeId, CryptoCode, new PayLightningInvoiceRequest
             {
@@ -53,9 +56,29 @@ namespace LNbank.Services
             });
         }
 
-        public async Task<LightningInvoiceData> GetInvoice(string invoiceId, CancellationToken cancellationToken)
+        public async Task<LightningInvoiceData> GetLightningInvoice(string invoiceId, CancellationToken cancellationToken = default)
         {
             return await _client.GetLightningInvoice(_storeId, CryptoCode, invoiceId, cancellationToken);
+        }
+
+        public async Task<LightningNodeInformationData> GetLightningNodeInfo(CancellationToken cancellationToken = default)
+        {
+            return await _client.GetLightningNodeInfo(_storeId, CryptoCode, cancellationToken);
+        }
+
+        public async Task<IEnumerable<LightningChannelData>> ListLightningChannels(CancellationToken cancellationToken = default)
+        {
+            return await _client.GetLightningNodeChannels(_storeId, CryptoCode, cancellationToken);
+        }
+
+        public async Task<string> GetLightningDepositAddress(CancellationToken cancellationToken = default)
+        {
+            return await _client.GetLightningDepositAddress(_storeId, CryptoCode, cancellationToken);
+        }
+
+        public async Task<string> OpenLightningChannel(OpenLightningChannelRequest req, CancellationToken cancellationToken = default)
+        {
+            return await _client.OpenLightningChannel(_storeId, CryptoCode, req, cancellationToken);
         }
     }
 }
