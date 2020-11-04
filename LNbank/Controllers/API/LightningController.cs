@@ -106,7 +106,7 @@ namespace LNbank.Controllers.API
             return Ok(result);
         }
 
-        [HttpGet("deposit-address")]
+        [HttpPost("deposit-address")]
         public async Task<ActionResult<string>> GetLightningDepositAddress()
         {
             var address = await _btcpayService.GetLightningDepositAddress();

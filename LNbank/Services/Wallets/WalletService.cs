@@ -72,6 +72,8 @@ namespace LNbank.Services.Wallets
 
         public async Task<Transaction> Receive(Wallet wallet, long sats, string description, TimeSpan expiry)
         {
+            if (sats <= 0) throw new ArgumentException(nameof(sats));
+
             var data = await _btcpayService.CreateLightningInvoice(new LightningInvoiceCreateRequest
             {
                 Amount = LightMoney.Satoshis(sats),

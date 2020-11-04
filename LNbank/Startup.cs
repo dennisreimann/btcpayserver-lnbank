@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using LNbank.Extensions;
+using Microsoft.Net.Http.Headers;
 
 namespace LNbank
 {
@@ -47,7 +48,8 @@ namespace LNbank
                         throw new ArgumentOutOfRangeException();
                 }
             });
-            services.AddControllersWithViews();
+            services.AddControllersWithViews()
+                    .AddNewtonsoftJson();
             services.AddProblemDetails();
 
             IMvcBuilder builder = services.AddRazorPages();
