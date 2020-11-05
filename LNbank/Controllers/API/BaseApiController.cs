@@ -1,5 +1,5 @@
 using System.Linq;
-using LNbank.Services.Authentication;
+using LNbank.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

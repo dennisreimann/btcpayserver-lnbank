@@ -1,4 +1,4 @@
-using LNbank.Services.Authentication;
+using LNbank.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.DependencyInjection;

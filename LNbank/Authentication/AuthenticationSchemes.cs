@@ -1,4 +1,4 @@
-namespace LNbank.Services.Authentication
+namespace LNbank.Authentication
 {
     public class AuthenticationSchemes
     {
