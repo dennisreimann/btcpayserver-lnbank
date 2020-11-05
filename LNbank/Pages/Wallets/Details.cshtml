@@ -20,37 +20,29 @@
 
 <div>
     <dl class="row">
-        <dt class="col-sm-2">
+        <dt class="col-sm-3 col-lg-2">
             @Html.DisplayNameFor(model => model.Wallet.WalletId)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-9 col-lg-10">
             @Html.DisplayFor(model => model.Wallet.WalletId)
         </dd>
-        <dt class="col-sm-2">
+        <dt class="col-sm-3 col-lg-2">
             @Html.DisplayNameFor(model => model.Wallet.CreatedAt)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-9 col-lg-10">
             @Html.DisplayFor(model => model.Wallet.CreatedAt)
         </dd>
-        @* <dt class="col-sm-2"> *@
-        @*     @Html.DisplayNameFor(model => model.Wallet.AdminKey) *@
-        @* </dt> *@
-        @* <dd class="col-sm-10"> *@
-        @*     @Html.DisplayFor(model => model.Wallet.AdminKey) *@
-        @* </dd> *@
-        @* <dt class="col-sm-2"> *@
-        @*     @Html.DisplayNameFor(model => model.Wallet.InvoiceKey) *@
-        @* </dt> *@
-        @* <dd class="col-sm-10"> *@
-        @*     @Html.DisplayFor(model => model.Wallet.InvoiceKey) *@
-        @* </dd> *@
-        @* <dt class="col-sm-2"> *@
-        @*     @Html.DisplayNameFor(model => model.Wallet.ReadonlyKey) *@
-        @* </dt> *@
-        @* <dd class="col-sm-10"> *@
-        @*     @Html.DisplayFor(model => model.Wallet.ReadonlyKey) *@
-        @* </dd> *@
     </dl>
+
+    <h2>Connection String</h2>
+    <p class="mt-4 text-muted">
+        You can set up this wallet as a Lightning Node in BTCPay Server.
+        Add the following settings as the Lightning Node Connection String in your stores Lightning settings.
+    </p>
+
+    <button class="btn btn-primary my-2" type="button" data-clipboard="@Html.DisplayFor(model => model.ConnectionString)">Copy connection string</button>
+
+    <pre class="connection-string my-3">@Html.DisplayFor(model => model.ConnectionString)</pre>
 </div>
 
 <p>

@@ -71,6 +71,11 @@ namespace LNbank.Services.Users
             return user;
         }
 
+        public async Task<User> FindUserById(string userId)
+        {
+            return await _dbContext.Users.SingleOrDefaultAsync(u => u.UserId == userId);
+        }
+
         public async Task<User> FindUserByBtcPayApiKey(string apiKey)
         {
             return await _dbContext.Users.SingleOrDefaultAsync(u => u.BTCPayApiKey == apiKey);
