@@ -101,7 +101,6 @@ namespace LNbank.Controllers.API
         [HttpPost("channels")]
         public async Task<ActionResult<string>> OpenLightningChannel(OpenLightningChannelRequest req)
         {
-            // TODO: Test
             var result = await _btcpayService.OpenLightningChannel(req);
             return Ok(result);
         }
