@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BTCPayServer.Client;
 using BTCPayServer.Lightning;
 using LNbank.Data;
 using LNbank.Data.Models;
@@ -76,6 +77,7 @@ namespace LNbank.Services.Wallets
 
             var data = await _btcpayService.CreateLightningInvoice(new LightningInvoiceCreateRequest
             {
+                WalletId = wallet.WalletId,
                 Amount = LightMoney.Satoshis(sats),
                 Description = description,
                 Expiry = expiry
@@ -99,6 +101,11 @@ namespace LNbank.Services.Wallets
         {
             var amount = bolt11.MinimumAmount;
 
+            if (bolt11.ExpiryDate <= DateTimeOffset.UtcNow)
+            {
+                throw new Exception($"Payment request already expired at {bolt11.ExpiryDate}.");
+            }
+
             if (wallet.Balance < amount)
             {
                 var balanceSats = wallet.Balance.ToUnit(LightMoneyUnit.Satoshi);
@@ -115,19 +122,31 @@ namespace LNbank.Services.Wallets
                     PaymentRequest = paymentRequest
                 });
             }
-            catch (Exception)
+            catch (GreenFieldAPIException ex) when (ex.APIError.Code == "could-not-find-route")
             {
                 internalReceivingTransaction = await GetTransaction(new TransactionQuery
                 {
-                    PaymentRequest = paymentRequest
+                    PaymentRequest = paymentRequest,
+                    HasInvoiceId = true
                 });
                 if (internalReceivingTransaction == null) throw;
             }
 
-            var now = DateTimeOffset.UtcNow;
+            if (internalReceivingTransaction != null)
+            {
+                if (internalReceivingTransaction.IsExpired)
+                {
+                    throw new Exception($"Payment request already expired at {internalReceivingTransaction.ExpiresAt}.");
+                }
+                if (internalReceivingTransaction.IsPaid)
+                {
+                    throw new Exception($"Payment request has already been paid.");
+                }
+            }
 
             // https://docs.microsoft.com/en-us/ef/core/saving/transactions#controlling-transactions
             await using var dbTransaction = await _dbContext.Database.BeginTransactionAsync();
+            var now = DateTimeOffset.UtcNow;
             var entry = await _dbContext.Transactions.AddAsync(new Transaction
             {
                 WalletId = wallet.WalletId,
@@ -234,12 +253,19 @@ namespace LNbank.Services.Wallets
         {
             if (query.UserId == null && query.WalletId == null)
             {
-                if (query.PaymentRequest != null)
+                var queryable = _dbContext.Transactions.AsQueryable();
+
+                if (query.HasInvoiceId)
                 {
-                    return _dbContext.Transactions.SingleOrDefault(t => t.PaymentRequest == query.PaymentRequest);
+                    queryable = queryable.Where(t => t.InvoiceId != null);
                 }
 
-                return _dbContext.Transactions.SingleOrDefault(t => t.TransactionId == query.TransactionId);
+                if (query.PaymentRequest != null)
+                {
+                    return queryable.SingleOrDefault(t => t.PaymentRequest == query.PaymentRequest);
+                }
+
+                return queryable.SingleOrDefault(t => t.TransactionId == query.TransactionId);
             }
 
             var wallet = await GetWallet(new WalletQuery

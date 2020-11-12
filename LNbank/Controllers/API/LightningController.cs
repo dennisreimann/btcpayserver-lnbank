@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BTCPayServer.Client;
 using BTCPayServer.Client.Models;
 using BTCPayServer.Lightning;
 using LNbank.Services;
@@ -85,7 +86,7 @@ namespace LNbank.Controllers.API
         }
 
         [HttpGet("invoice/{invoiceId}")]
-        public async Task<IActionResult> GetLightningInvoice(string invoiceId)
+        public async Task<ActionResult<LightningInvoiceData>> GetLightningInvoice(string invoiceId)
         {
             var invoice = await _btcpayService.GetLightningInvoice(invoiceId);
             return Ok(invoice);
