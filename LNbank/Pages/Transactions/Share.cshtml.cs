@@ -27,7 +27,7 @@ namespace LNbank.Pages.Transactions
                 TransactionId = transactionId
             });
 
-            if (Transaction == null || Transaction.IsPaid || Transaction.IsExpired) return NotFound();
+            if (Transaction == null || Transaction.IsExpired) return NotFound();
 
             return Page();
         }

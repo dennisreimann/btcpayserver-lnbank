@@ -31,11 +31,26 @@
             @(Model.Transaction.IsExpired ? "Expired" : "Expires")
             @Html.DisplayFor(model => model.Transaction.ExpiresAt)
         </h3>
+
+        @if (!Model.Transaction.IsExpired)
+        {
+            <img src="/QR/@Model.Transaction.PaymentRequest" class="qrcode my-4" alt="Payment Request as QR code"/>
+
+            <button class="btn btn-primary my-2" type="button" data-clipboard="@Html.DisplayFor(model => model.Transaction.PaymentRequest)">Copy payment request</button>
+
+            <pre class="payment-request d-inline-block mb-0 text-left">@Html.DisplayFor(model => model.Transaction.PaymentRequest)</pre>
+
+            <script>
+                window.LNbankHubs = window.LNbankHubs || []
+                window.LNbankHubs.push({
+                    id: 'Transaction',
+                    handlers: {
+                        '@Model.Transaction.TransactionId': data => {
+                            window.location.reload();
+                        }
+                    }
+                })
+            </script>
+        }
     }
-
-    <img src="/QR/@Model.Transaction.PaymentRequest" class="qrcode my-4" alt="Payment Request as QR code"/>
-
-    <button class="btn btn-primary my-2" type="button" data-clipboard="@Html.DisplayFor(model => model.Transaction.PaymentRequest)">Copy payment request</button>
-
-    <pre class="payment-request d-inline-block mb-0 text-left">@Html.DisplayFor(model => model.Transaction.PaymentRequest)</pre>
 </div>

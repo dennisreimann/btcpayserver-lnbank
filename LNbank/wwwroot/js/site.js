@@ -1,5 +1,7 @@
 ﻿"use strict"
 
+const isDev = document.documentElement.hasAttribute("data-devenv");
+
 // Clipboard
 window.copyToClipboard = (e, text) => {
     if (navigator.clipboard) {
@@ -26,23 +28,6 @@ window.copyUrlToClipboard = e => {
     window.copyToClipboard(e,  window.location)
 }
 
-// SignalR
-const connection = new signalR.HubConnectionBuilder()
-    .withUrl("/InvoiceHub")
-    .withAutomaticReconnect()
-    .build()
-
-connection.on("Message", console.debug)
-
-connection.start()
-    .catch(console.error)
-
-window.send = message => {
-    connection
-        .invoke("SendMessage", message)
-        .catch(console.error)
-}
-
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("[data-clipboard]").forEach(item => {
         item.addEventListener("click", window.copyToClipboard)
@@ -55,5 +40,21 @@ document.addEventListener("DOMContentLoaded", () => {
             const mode = current === COLOR_MODES[0] ? COLOR_MODES[1] : COLOR_MODES[0]
             setColorMode(mode)
         })
+    })
+
+    // SignalR
+    ;(window.LNbankHubs || []).forEach(hub => {
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(`/Hubs/${hub.id}`)
+            .withAutomaticReconnect()
+            .build()
+
+        Object.entries(hub.handlers).forEach(([message, handler]) => {
+            if (isDev) connection.on(message, console.debug)
+            connection.on(message, handler)
+        })
+
+        connection.start()
+            .catch(console.error)
     })
 })

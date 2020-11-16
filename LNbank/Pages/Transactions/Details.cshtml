@@ -54,6 +54,18 @@
             <img src="/QR/@Model.Transaction.PaymentRequest" class="qrcode my-4" alt="Payment Request as QR code"/>
 
             <pre class="payment-request">@Html.DisplayFor(model => model.Transaction.PaymentRequest)</pre>
+
+            <script>
+                window.LNbankHubs = window.LNbankHubs || []
+                window.LNbankHubs.push({
+                    id: 'Transaction',
+                    handlers: {
+                        '@Model.Transaction.TransactionId': data => {
+                            window.location.reload();
+                        }
+                    }
+                })
+            </script>
         }
     }
 </div>

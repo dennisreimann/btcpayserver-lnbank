@@ -23,20 +23,20 @@ namespace LNbank.Services.Wallets
     {
         private readonly ILogger _logger;
         private readonly BTCPayService _btcpayService;
-        private readonly IHubContext<InvoiceHub> _invoiceHub;
+        private readonly IHubContext<TransactionHub> _transactionHub;
         private readonly ApplicationDbContext _dbContext;
         private readonly Network _network;
 
         public WalletService(
             IWebHostEnvironment env,
             ILogger<WalletService> logger,
-            IHubContext<InvoiceHub> invoiceHub,
+            IHubContext<TransactionHub> transactionHub,
             BTCPayService btcpayService,
             ApplicationDbContext dbContext)
         {
             _logger = logger;
             _btcpayService = btcpayService;
-            _invoiceHub = invoiceHub;
+            _transactionHub = transactionHub;
             _dbContext = dbContext;
 
             // TODO: Configure network properly
@@ -307,7 +307,12 @@ namespace LNbank.Services.Wallets
             transaction.PaidAt = date;
 
             await UpdateTransaction(transaction);
-            await _invoiceHub.Clients.All.SendAsync("Message", $"Transaction {transaction.TransactionId} paid");
+            await _transactionHub.Clients.All.SendAsync(transaction.TransactionId, new
+            {
+                transaction.Status,
+                transaction.IsPaid,
+                transaction.IsExpired
+            });
         }
 
         public async ValueTask DisposeAsync()

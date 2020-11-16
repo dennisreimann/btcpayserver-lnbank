@@ -108,7 +108,7 @@ namespace LNbank
             {
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
-                endpoints.MapHub<InvoiceHub>("/InvoiceHub");
+                endpoints.MapHub<TransactionHub>("/Hubs/Transaction");
             });
         }
     }
