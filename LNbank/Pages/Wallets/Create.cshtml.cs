@@ -31,10 +31,7 @@ namespace LNbank.Pages.Wallets
 
             Wallet = new Wallet
             {
-                UserId = UserId,
-                AdminKey = Guid.NewGuid().ToString(),
-                InvoiceKey = Guid.NewGuid().ToString(),
-                ReadonlyKey = Guid.NewGuid().ToString()
+                UserId = UserId
             };
 
             if (await TryUpdateModelAsync<Wallet>(Wallet, "wallet", w => w.Name))

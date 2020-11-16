@@ -19,9 +19,6 @@ namespace LNbank.Data.Models
         public string Name { get; set; }
         [DisplayName("Creation date")]
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-        public string AdminKey { get; set; }
-        public string InvoiceKey { get; set; }
-        public string ReadonlyKey { get; set; }
 
         public User User { get; set; }
         public List<Transaction> Transactions { get; set; } = new List<Transaction>();

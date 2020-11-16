@@ -9,14 +9,30 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LNbank.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200916124027_AddAdminFlagToUser")]
-    partial class AddAdminFlagToUser
+    [Migration("20201116102558_InitialSchema")]
+    partial class InitialSchema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.6");
+
+            modelBuilder.Entity("LNbank.Data.Models.Setting", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Name", "Type");
+
+                    b.ToTable("Settings");
+                });
 
             modelBuilder.Entity("LNbank.Data.Models.Transaction", b =>
                 {
@@ -85,20 +101,11 @@ namespace LNbank.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("AdminKey")
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("InvoiceKey")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ReadonlyKey")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")

@@ -3,17 +3,31 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace LNbank.Data.Migrations
 {
-    public partial class CreateInitialSchema : Migration
+    public partial class InitialSchema : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Settings",
+                columns: table => new
+                {
+                    Name = table.Column<string>(nullable: false),
+                    Type = table.Column<string>(nullable: false),
+                    Value = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Settings", x => new { x.Name, x.Type });
+                });
+
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
                     UserId = table.Column<string>(nullable: false),
                     BTCPayUserId = table.Column<string>(nullable: true),
-                    BTCPayApiKey = table.Column<string>(nullable: true)
+                    BTCPayApiKey = table.Column<string>(nullable: true),
+                    BTCPayIsAdmin = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -27,10 +41,7 @@ namespace LNbank.Data.Migrations
                     WalletId = table.Column<string>(nullable: false),
                     UserId = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(nullable: false),
-                    AdminKey = table.Column<string>(nullable: true),
-                    InvoiceKey = table.Column<string>(nullable: true),
-                    ReadonlyKey = table.Column<string>(nullable: true)
+                    CreatedAt = table.Column<DateTimeOffset>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -82,6 +93,9 @@ namespace LNbank.Data.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Settings");
+
             migrationBuilder.DropTable(
                 name: "Transactions");
 
