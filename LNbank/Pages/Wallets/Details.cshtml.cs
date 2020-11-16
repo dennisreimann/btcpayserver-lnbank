@@ -1,9 +1,10 @@
-using System.Linq;
+using System;
 using System.Threading.Tasks;
 using LNbank.Data.Models;
 using LNbank.Services.Settings;
 using LNbank.Services.Users;
 using LNbank.Services.Wallets;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LNbank.Pages.Wallets
@@ -11,7 +12,6 @@ namespace LNbank.Pages.Wallets
     public class DetailsModel : BasePageModel
     {
         private readonly WalletService _walletService;
-        private readonly SettingsService _settingsService;
         private readonly UserService _userService;
 
         public Wallet Wallet { get; set; }
@@ -22,7 +22,6 @@ namespace LNbank.Pages.Wallets
             SettingsService settingsService,
             UserService userService) : base(settingsService)
         {
-            _settingsService = settingsService;
             _walletService = walletService;
             _userService = userService;
         }
@@ -44,8 +43,10 @@ namespace LNbank.Pages.Wallets
 
         private async Task<string> CreateConnectionString()
         {
+            var url = HttpContext.Request.GetDisplayUrl();
+            var index = url.IndexOf("/Wallets/Details/", StringComparison.InvariantCultureIgnoreCase);
+            var server =  url.Substring(0, index);
             var user = await _userService.FindUserById(UserId);
-            var server = $"{_settingsService.BtcPay.Endpoint}lnbank";
             return $"type=lnbank;server={server};api-token={user.BTCPayApiKey};wallet-id={Wallet.WalletId}";
         }
     }
