@@ -58,7 +58,10 @@ namespace LNbank
                 options.MapToStatusCode<GreenFieldAPIException>(StatusCodes.Status400BadRequest);
             });
 
-            IMvcBuilder builder = services.AddRazorPages();
+            IMvcBuilder builder = services.AddRazorPages(options =>
+            {
+                options.Conventions.AllowAnonymousToPage("/Settings/New");
+            });
 
             if (Env.IsDevelopment())
             {

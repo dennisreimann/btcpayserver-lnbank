@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using BTCPayServer.Client;
 using BTCPayServer.Client.Models;
-using BTCPayServer.Lightning;
 using LNbank.Services.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace LNbank.Services
 {
@@ -17,20 +17,26 @@ namespace LNbank.Services
         private readonly Uri _baseUri;
         private readonly string _storeId;
 
-        public BTCPayService(SettingsService settingsService) : this(
-            settingsService.BtcPay.Endpoint, settingsService.BtcPay.StoreId, settingsService.BtcPay.ApiKey)
-        {
-        }
+        public BTCPayService(
+            SettingsService settingsService,
+            ILogger<BTCPayService> logger) : this(
+            settingsService.BtcPay.Endpoint,
+            settingsService.BtcPay.StoreId,
+            settingsService.BtcPay.ApiKey,
+            logger) {}
 
-        public BTCPayService(string endpoint, string storeId, string apiKey)
+        public BTCPayService(string endpoint, string storeId, string apiKey, ILogger<BTCPayService> logger)
         {
-            if (apiKey == null) throw new ArgumentNullException(nameof(apiKey));
-            if (storeId == null) throw new ArgumentNullException(nameof(storeId));
-            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
-
-            _storeId = storeId;
-            _baseUri = new Uri(endpoint);
-            _client = new BTCPayServerClient(_baseUri, apiKey);
+            if (apiKey == null || storeId == null || endpoint == null)
+            {
+                logger.LogWarning("BTCPay Server settings missing, cannot instantiate BTCPayService.");
+            }
+            else
+            {
+                _storeId = storeId;
+                _baseUri = new Uri(endpoint);
+                _client = new BTCPayServerClient(_baseUri, apiKey);
+            }
         }
 
         public async Task<ApplicationUserData> GetUserDataForApiKey(string userApiKey)

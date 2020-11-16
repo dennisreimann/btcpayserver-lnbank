@@ -44,5 +44,10 @@ namespace LNbank.Services.Settings
             settings.Load(_dbContext);
             return settings;
         }
+
+        public bool NeedsSettings =>
+            string.IsNullOrEmpty(BtcPay.ApiKey) ||
+            string.IsNullOrEmpty(BtcPay.StoreId) ||
+            string.IsNullOrEmpty(BtcPay.Endpoint);
     }
 }

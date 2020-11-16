@@ -36,23 +36,13 @@ namespace LNbank.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("~/login")]
-        public ActionResult Login(LoginViewModel model)
+        [HttpGet("~/Login")]
+        public ActionResult Login()
         {
             var appName = _settingsService.App.Name;
             var appIdentifier = appName.GenerateSlug();
-            var endpoint = _settingsService.BtcPay.Endpoint ?? model.Endpoint;
-
-            if (string.IsNullOrWhiteSpace(endpoint))
-            {
-                return View(new LoginViewModel
-                {
-                    AppName = appName,
-                    Endpoint = endpoint
-                });
-            }
-
-            var redirect = $"{Request.Scheme}://{Request.Host}/login-callback";
+            var endpoint = _settingsService.BtcPay.Endpoint;
+            var redirect = $"{Request.Scheme}://{Request.Host}/Login";
             UriBuilder uriBuilder = new UriBuilder(endpoint)
             {
                 Path = "api-keys/authorize",
@@ -64,7 +54,7 @@ namespace LNbank.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("~/login-callback")]
+        [HttpPost("~/Login")]
         public async Task<IActionResult> LoginCallback(string apiKey, string userId, string[] permissions)
         {
             bool authorized = RequiredPermissions.All(p => permissions.Contains(p));
@@ -101,20 +91,12 @@ namespace LNbank.Controllers
             return RedirectToPage("/Wallets/Index");
         }
 
-        [HttpPost("~/logout")]
+        [HttpPost("~/Logout")]
         public async Task<ActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             return Redirect("/");
         }
-    }
-
-    public class LoginViewModel
-    {
-        public string AppName { get; set; }
-        [DisplayName("BTCPay Server URL")]
-        [Required]
-        public string Endpoint { get; set; }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using LNbank.Services.Settings;
 using LNbank.Services.Wallets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,21 +31,30 @@ namespace LNbank.Services
             {
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    var walletService = scope.ServiceProvider.GetRequiredService<WalletService>();
+                    var settingsService = scope.ServiceProvider.GetRequiredService<SettingsService>();
 
-                    var transactions = await walletService.GetPendingTransactions();
-                    var list = transactions.ToList();
-                    int count = list.Count();
-
-                    if (count > 0)
+                    if (settingsService.NeedsSettings)
                     {
-                        _logger.LogDebug($"{nameof(LightningInvoiceWatcher)} processing {count} transactions.");
-
-                        await Task.WhenAll(list.Select(transaction => walletService.CheckPendingTransaction(transaction, cancellationToken)));
+                        await Task.Delay(60_000, cancellationToken);
                     }
-                };
+                    else
+                    {
+                        var walletService = scope.ServiceProvider.GetRequiredService<WalletService>();
 
-                await Task.Delay(5_000, cancellationToken);
+                        var transactions = await walletService.GetPendingTransactions();
+                        var list = transactions.ToList();
+                        int count = list.Count();
+
+                        if (count > 0)
+                        {
+                            _logger.LogDebug($"{nameof(LightningInvoiceWatcher)} processing {count} transactions.");
+
+                            await Task.WhenAll(list.Select(transaction => walletService.CheckPendingTransaction(transaction, cancellationToken)));
+                        }
+
+                        await Task.Delay(5_000, cancellationToken);
+                    }
+                }
             }
         }
 

@@ -14,8 +14,8 @@ namespace LNbank.Extensions
                 .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(AuthenticationSchemes.ApiBasic, o => {})
                 .AddCookie(options =>
                 {
-                    options.LoginPath = "/login";
-                    options.LogoutPath = "/logout";
+                    options.LoginPath = "/Login";
+                    options.LogoutPath = "/Logout";
                     options.Cookie.Name = "LNbank";
                 });
         }

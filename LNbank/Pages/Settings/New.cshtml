@@ -1,0 +1,13 @@
+@page "/Setup"
+@model LNbank.Pages.Settings.NewModel
+
+@{
+    Layout = "_LayoutSimple";
+    Model.SetTitle("Setup");
+}
+
+<partial name="_SetupForm" model="Model"/>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
