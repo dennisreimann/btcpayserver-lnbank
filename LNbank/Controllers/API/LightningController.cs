@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BTCPayServer.Client;
 using BTCPayServer.Client.Models;
 using BTCPayServer.Lightning;
+using LNbank.Data.Models;
 using LNbank.Services;
 using LNbank.Services.Wallets;
 using Microsoft.AspNetCore.Mvc;
@@ -37,16 +38,7 @@ namespace LNbank.Controllers.API
             if (wallet == null) return NotFound();
 
             var transaction = await _walletService.Receive(wallet, req.Amount, req.Description, req.Expiry);
-            var data = new LightningInvoiceData
-            {
-                Amount = transaction.Amount,
-                Id = transaction.InvoiceId,
-                Status = transaction.LightningInvoiceStatus,
-                AmountReceived = transaction.AmountSettled,
-                PaidAt = transaction.PaidAt,
-                BOLT11 = transaction.PaymentRequest,
-                ExpiresAt = transaction.ExpiresAt
-            };
+            var data = ToLightningInvoiceData(transaction);
             return Ok(data);
         }
 
@@ -88,7 +80,12 @@ namespace LNbank.Controllers.API
         [HttpGet("invoice/{invoiceId}")]
         public async Task<ActionResult<LightningInvoiceData>> GetLightningInvoice(string invoiceId)
         {
-            var invoice = await _btcpayService.GetLightningInvoice(invoiceId);
+            var transaction = await _walletService.GetTransaction(new TransactionQuery
+            {
+                UserId = UserId,
+                InvoiceId = invoiceId
+            });
+            var invoice = ToLightningInvoiceData(transaction);
             return Ok(invoice);
         }
 
@@ -112,5 +109,17 @@ namespace LNbank.Controllers.API
             var address = await _btcpayService.GetLightningDepositAddress();
             return Ok(address);
         }
+
+        private LightningInvoiceData ToLightningInvoiceData(Transaction transaction) =>
+            new LightningInvoiceData
+            {
+                Amount = transaction.Amount,
+                Id = transaction.InvoiceId,
+                Status = transaction.LightningInvoiceStatus,
+                AmountReceived = transaction.AmountSettled,
+                PaidAt = transaction.PaidAt,
+                BOLT11 = transaction.PaymentRequest,
+                ExpiresAt = transaction.ExpiresAt
+            };
     }
 }

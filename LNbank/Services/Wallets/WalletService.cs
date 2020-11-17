@@ -251,31 +251,45 @@ namespace LNbank.Services.Wallets
 
         public async Task<Transaction> GetTransaction(TransactionQuery query)
         {
-            if (query.UserId == null && query.WalletId == null)
+            IQueryable<Transaction> queryable = _dbContext.Transactions.AsQueryable();
+
+            if (query.WalletId != null)
             {
-                var queryable = _dbContext.Transactions.AsQueryable();
-
-                if (query.HasInvoiceId)
+                var walletQuery = new WalletQuery
                 {
-                    queryable = queryable.Where(t => t.InvoiceId != null);
-                }
+                    WalletId = query.WalletId,
+                    IncludeTransactions = true
+                };
 
-                if (query.PaymentRequest != null)
-                {
-                    return queryable.SingleOrDefault(t => t.PaymentRequest == query.PaymentRequest);
-                }
+                if (query.UserId != null) walletQuery.UserId = query.UserId;
 
-                return queryable.SingleOrDefault(t => t.TransactionId == query.TransactionId);
+                var wallet = await GetWallet(walletQuery);
+
+                if (wallet == null) return null;
+
+                queryable = wallet.Transactions.AsQueryable();
             }
 
-            var wallet = await GetWallet(new WalletQuery
+            if (query.InvoiceId != null)
             {
-                UserId = query.UserId,
-                WalletId = query.WalletId,
-                IncludeTransactions = true
-            });
+                queryable = queryable.Where(t => t.InvoiceId == query.InvoiceId);
+            }
+            else if (query.HasInvoiceId)
+            {
+                queryable = queryable.Where(t => t.InvoiceId != null);
+            }
 
-            return wallet?.Transactions.SingleOrDefault(t => t.TransactionId == query.TransactionId);
+            if (query.TransactionId != null)
+            {
+                queryable = queryable.Where(t => t.TransactionId == query.TransactionId);
+            }
+
+            if (query.PaymentRequest != null)
+            {
+                queryable = queryable.Where(t => t.PaymentRequest == query.PaymentRequest);
+            }
+
+            return queryable.SingleOrDefault();
         }
 
         public async Task<Transaction> UpdateTransaction(Transaction transaction)
