@@ -3,6 +3,7 @@ using BTCPayServer.Client;
 using Hellang.Middleware.ProblemDetails;
 using LNbank.Configuration;
 using LNbank.Data;
+using LNbank.Exceptions;
 using LNbank.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using LNbank.Extensions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 
 namespace LNbank
@@ -54,8 +56,8 @@ namespace LNbank
                     .AddNewtonsoftJson();
             services.AddProblemDetails(options =>
             {
+                options.Map<GreenFieldAPIException>(ex => new GreenFieldAPIProblemDetails(ex));
                 options.MapToStatusCode<GreenFieldValidationException>(StatusCodes.Status422UnprocessableEntity);
-                options.MapToStatusCode<GreenFieldAPIException>(StatusCodes.Status400BadRequest);
             });
 
             IMvcBuilder builder = services.AddRazorPages(options =>
