@@ -103,6 +103,13 @@ namespace LNbank.Controllers.API
             return Ok(result);
         }
 
+        [HttpPost("connect")]
+        public async Task<ActionResult> ConnectToLightningNode(ConnectToNodeRequest req)
+        {
+            await _btcpayService.ConnectToLightningNode(req);
+            return Ok();
+        }
+
         [HttpPost("deposit-address")]
         public async Task<ActionResult<string>> GetLightningDepositAddress()
         {

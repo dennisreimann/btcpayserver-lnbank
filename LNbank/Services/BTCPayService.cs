@@ -86,5 +86,10 @@ namespace LNbank.Services
         {
             return await _client.OpenLightningChannel(_storeId, CryptoCode, req, cancellationToken);
         }
+
+        public async Task ConnectToLightningNode(ConnectToNodeRequest req, CancellationToken cancellationToken = default)
+        {
+            await _client.ConnectToLightningNode(_storeId, CryptoCode, req, cancellationToken);
+        }
     }
 }
