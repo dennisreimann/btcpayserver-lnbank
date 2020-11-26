@@ -45,8 +45,10 @@
                 window.LNbankHubs.push({
                     id: 'Transaction',
                     handlers: {
-                        '@Model.Transaction.TransactionId': data => {
-                            window.location.reload();
+                        'transaction-update': data => {
+                            if (data.transactionId === "@Model.Transaction.TransactionId") {
+                                window.location.reload();
+                            }
                         }
                     }
                 })

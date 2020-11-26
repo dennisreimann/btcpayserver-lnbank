@@ -321,11 +321,15 @@ namespace LNbank.Services.Wallets
             transaction.PaidAt = date;
 
             await UpdateTransaction(transaction);
-            await _transactionHub.Clients.All.SendAsync(transaction.TransactionId, new
+            await _transactionHub.Clients.All.SendAsync("transaction-update", new
             {
+                transaction.TransactionId,
+                transaction.InvoiceId,
+                transaction.WalletId,
                 transaction.Status,
                 transaction.IsPaid,
-                transaction.IsExpired
+                transaction.IsExpired,
+                Event = "paid"
             });
         }
 
