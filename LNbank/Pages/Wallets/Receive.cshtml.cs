@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using BTCPayServer.Lightning;
 using LNbank.Data.Models;
 using LNbank.Services.Settings;
 using LNbank.Services.Wallets;
@@ -59,7 +60,8 @@ namespace LNbank.Pages.Wallets
 
             try
             {
-                var transaction = await _walletService.Receive(Wallet, Amount, Description);
+                var amount = LightMoney.Satoshis(Amount).MilliSatoshi;
+                var transaction = await _walletService.Receive(Wallet, amount, Description);
                 var transactionId = transaction.TransactionId;
                 return RedirectToPage("/Transactions/Details", new { walletId, transactionId });
             }

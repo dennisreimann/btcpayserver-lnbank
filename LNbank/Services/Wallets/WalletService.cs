@@ -68,17 +68,17 @@ namespace LNbank.Services.Wallets
             return await queryable.FirstOrDefaultAsync();
         }
 
-        public async Task<Transaction> Receive(Wallet wallet, long sats, string description) =>
-            await Receive(wallet, sats, description, LightningInvoiceCreateRequest.ExpiryDefault);
+        public async Task<Transaction> Receive(Wallet wallet, long amount, string description) =>
+            await Receive(wallet, amount, description, LightningInvoiceCreateRequest.ExpiryDefault);
 
-        public async Task<Transaction> Receive(Wallet wallet, long sats, string description, TimeSpan expiry)
+        public async Task<Transaction> Receive(Wallet wallet, long amount, string description, TimeSpan expiry)
         {
-            if (sats <= 0) throw new ArgumentException(nameof(sats));
+            if (amount <= 0) throw new ArgumentException(nameof(amount));
 
             var data = await _btcpayService.CreateLightningInvoice(new LightningInvoiceCreateRequest
             {
                 WalletId = wallet.WalletId,
-                Amount = LightMoney.Satoshis(sats),
+                Amount = amount,
                 Description = description,
                 Expiry = expiry
             });
