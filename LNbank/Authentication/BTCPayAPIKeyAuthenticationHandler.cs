@@ -18,10 +18,10 @@ namespace LNbank.Authentication
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             string authHeader = Context.Request.Headers["Authorization"];
-            if (authHeader == null || !authHeader.StartsWith("token ", StringComparison.InvariantCultureIgnoreCase))
+            if (authHeader == null || !authHeader.StartsWith("Bearer ", StringComparison.InvariantCultureIgnoreCase))
                 return AuthenticateResult.NoResult();
 
-            string apiKey = authHeader.Substring("token ".Length);
+            string apiKey = authHeader.Substring("Bearer ".Length);
 
             try
             {
