@@ -14,11 +14,17 @@ namespace LNbank.Extensions
                 .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(AuthenticationSchemes.ApiBasic, o => {})
                 .AddCookie(options =>
                 {
-                    // Foward API and Hub requests to API key scheme
+                    // Forward API and Hub requests to API key scheme
                     options.ForwardDefaultSelector = ctx =>
-                        ctx.Request.Path.StartsWithSegments("/api") || ctx.Request.Path.StartsWithSegments("/Hubs")
+                    {
+                        string authHeader = ctx.Request.Headers["Authorization"];
+                        bool isBearerAuth = authHeader != null && authHeader.StartsWith("Bearer ");
+                        bool isApiOrHub = ctx.Request.Path.StartsWithSegments("/api") || ctx.Request.Path.StartsWithSegments("/Hubs");
+
+                        return isApiOrHub && isBearerAuth
                             ? AuthenticationSchemes.ApiBTCPayAPIKey
                             : null;
+                    };
 
                     options.LoginPath = "/Login";
                     options.LogoutPath = "/Logout";
