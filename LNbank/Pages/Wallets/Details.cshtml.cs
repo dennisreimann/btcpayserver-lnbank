@@ -45,9 +45,10 @@ namespace LNbank.Pages.Wallets
         {
             var url = HttpContext.Request.GetDisplayUrl();
             var index = url.IndexOf("/Wallets/Details/", StringComparison.InvariantCultureIgnoreCase);
-            var server =  url.Substring(0, index);
+            var server = url.Substring(0, index);
+            var insecure = HttpContext.Request.Scheme == "http" ? ";allowinsecure=true" : "";
             var user = await _userService.FindUserById(UserId);
-            return $"type=lnbank;server={server};api-token={user.BTCPayApiKey};wallet-id={Wallet.WalletId}";
+            return $"type=lnbank;server={server};api-token={user.BTCPayApiKey};wallet-id={Wallet.WalletId}{insecure}";
         }
     }
 }
