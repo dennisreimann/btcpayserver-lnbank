@@ -13,35 +13,36 @@ namespace LNbank.Services.Settings
 
     public class SettingsService : ISettings
     {
+        private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
         private readonly Lazy<AppSettings> _appSettings;
         public AppSettings App => _appSettings.Value;
 
         private readonly Lazy<BtcPaySettings> _btcpaySettings;
         public BtcPaySettings BtcPay => _btcpaySettings.Value;
-
-        private readonly ApplicationDbContext _dbContext;
-        public SettingsService(ApplicationDbContext dbContext)
+        public SettingsService(IDbContextFactory<ApplicationDbContext> dbContextFactory)
         {
-            _dbContext = dbContext;
+            _dbContextFactory = dbContextFactory;
             _appSettings = new Lazy<AppSettings>(CreateSettings<AppSettings>);
             _btcpaySettings = new Lazy<BtcPaySettings>(CreateSettings<BtcPaySettings>);
         }
 
         public async Task SaveAsync()
         {
+            await using var dbContext = _dbContextFactory.CreateDbContext();
             if (_appSettings.IsValueCreated)
-                _appSettings.Value.Save(_dbContext);
+                _appSettings.Value.Save(dbContext);
 
             if (_btcpaySettings.IsValueCreated)
-                _btcpaySettings.Value.Save(_dbContext);
+                _btcpaySettings.Value.Save(dbContext);
 
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
 
         private T CreateSettings<T>() where T : SettingsBase, new()
         {
+            using var dbContext = _dbContextFactory.CreateDbContext();
             var settings = new T();
-            settings.Load(_dbContext);
+            settings.Load(dbContext);
             return settings;
         }
 
