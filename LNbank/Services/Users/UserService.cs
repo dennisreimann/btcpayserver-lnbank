@@ -14,21 +14,22 @@ namespace LNbank.Services.Users
         private static readonly string AdminRoleName = "ServerAdmin";
 
         private readonly ILogger<UserService> _logger;
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
         private readonly BTCPayService _btcpayService;
 
         public UserService(
             ILogger<UserService> logger,
-            ApplicationDbContext dbContext,
+            IDbContextFactory<ApplicationDbContext> dbContextFactory,
             BTCPayService btcpayService)
         {
             _logger = logger;
-            _dbContext = dbContext;
+            _dbContextFactory = dbContextFactory;
             _btcpayService = btcpayService;
         }
 
         public async Task<User> CreateOrUpdateBtcPayUser(string userId, string apiKey)
         {
+            await using var dbContext = _dbContextFactory.CreateDbContext();
             ApplicationUserData userData = null;
             try
             {
@@ -44,16 +45,16 @@ namespace LNbank.Services.Users
                 throw new Exception($"Invalid user or user {userId} not registered at endpoint.");
             }
 
-            var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.BTCPayUserId == userId);
+            var user = await dbContext.Users.SingleOrDefaultAsync(u => u.BTCPayUserId == userId);
             bool isAdmin = userData.Roles.Contains(AdminRoleName);
 
             if (user != null)
             {
-                var entry = _dbContext.Entry(user);
+                var entry = dbContext.Entry(user);
                 user.BTCPayApiKey = apiKey;
                 user.BTCPayIsAdmin = isAdmin;
                 entry.State = EntityState.Modified;
-                await _dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
             }
             else
             {
@@ -64,8 +65,8 @@ namespace LNbank.Services.Users
                     BTCPayIsAdmin = isAdmin
                 };
 
-                await _dbContext.Users.AddAsync(user);
-                await _dbContext.SaveChangesAsync();
+                await dbContext.Users.AddAsync(user);
+                await dbContext.SaveChangesAsync();
             }
 
             return user;
@@ -73,12 +74,14 @@ namespace LNbank.Services.Users
 
         public async Task<User> FindUserById(string userId)
         {
-            return await _dbContext.Users.SingleOrDefaultAsync(u => u.UserId == userId);
+            await using var dbContext = _dbContextFactory.CreateDbContext();
+            return await dbContext.Users.SingleOrDefaultAsync(u => u.UserId == userId);
         }
 
         public async Task<User> FindUserByBtcPayApiKey(string apiKey)
         {
-            return await _dbContext.Users.SingleOrDefaultAsync(u => u.BTCPayApiKey == apiKey);
+            await using var dbContext = _dbContextFactory.CreateDbContext();
+            return await dbContext.Users.SingleOrDefaultAsync(u => u.BTCPayApiKey == apiKey);
         }
     }
 }

@@ -2,7 +2,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace LNbank.Configuration
 {
-    public class AppOptions : IAppOptions
+    public class AppOptions
     {
         public const string EnvVarPrefix = "LNBANK_";
 
@@ -10,11 +10,19 @@ namespace LNbank.Configuration
         public DatabaseType DatabaseType { get; set; }
         public string RootPath { get; set; }
 
-        public AppOptions(IConfiguration configuration)
+        public AppOptions Configure(IConfiguration configuration)
         {
             DatabaseConnectionString = configuration.GetValue<string>("Database");
             DatabaseType = configuration.GetValue("DatabaseType", DatabaseType.Sqlite);
             RootPath = configuration.GetValue("RootPath", "");
+            return this;
         }
+    }
+    
+
+    public enum DatabaseType
+    {
+        Sqlite,
+        Postgres
     }
 }

@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using LNbank.Extensions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 
 namespace LNbank
@@ -32,28 +31,18 @@ namespace LNbank
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var appOptions = new AppOptions(Configuration);
+            services.AddOptions<AppOptions>().Configure(options => options.Configure(Configuration));
+            services.AddHostedService<DatabaseMigrationHostedService>();
 
-            services.AddAppServices(appOptions);
+            services.AddAppServices();
             services.AddAppAuthentication();
             services.AddAppAuthorization();
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                switch (appOptions.DatabaseType)
-                {
-                    case DatabaseType.Sqlite:
-                        options.UseSqlite(appOptions.DatabaseConnectionString);
-                        break;
-                    case DatabaseType.Postgres:
-                        options.UseNpgsql(appOptions.DatabaseConnectionString);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            });
+            services.AddDbContextFactory<ApplicationDbContext>(ConfigureDbContextOptions);
+            services.AddDbContext<ApplicationDbContext>(ConfigureDbContextOptions);
+
             services.AddControllersWithViews()
-                    .AddNewtonsoftJson();
+                .AddNewtonsoftJson();
             services.AddProblemDetails(options =>
             {
                 options.Map<GreenFieldAPIException>(ex => new GreenFieldAPIProblemDetails(ex));
@@ -73,6 +62,23 @@ namespace LNbank
             services.AddSignalR();
         }
 
+        private void ConfigureDbContextOptions(DbContextOptionsBuilder options)
+        {
+            var appOptions = new AppOptions().Configure(Configuration);
+
+            switch (appOptions.DatabaseType)
+            {
+                case DatabaseType.Sqlite:
+                    options.UseSqlite(appOptions.DatabaseConnectionString);
+                    break;
+                case DatabaseType.Postgres:
+                    options.UseNpgsql(appOptions.DatabaseConnectionString);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
@@ -80,6 +86,7 @@ namespace LNbank
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
+                app.UseMigrationsEndPoint();
             }
             else
             {

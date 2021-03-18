@@ -19,12 +19,12 @@ using Transaction = LNbank.Data.Models.Transaction;
 
 namespace LNbank.Services.Wallets
 {
-    public class WalletService : IDisposable, IAsyncDisposable
+    public class WalletService
     {
         private readonly ILogger _logger;
         private readonly BTCPayService _btcpayService;
+        private readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
         private readonly IHubContext<TransactionHub> _transactionHub;
-        private readonly ApplicationDbContext _dbContext;
         private readonly Network _network;
 
         public WalletService(
@@ -32,12 +32,12 @@ namespace LNbank.Services.Wallets
             ILogger<WalletService> logger,
             IHubContext<TransactionHub> transactionHub,
             BTCPayService btcpayService,
-            ApplicationDbContext dbContext)
+            IDbContextFactory<ApplicationDbContext> dbContextFactory)
         {
             _logger = logger;
             _btcpayService = btcpayService;
+            _dbContextFactory = dbContextFactory;
             _transactionHub = transactionHub;
-            _dbContext = dbContext;
 
             // TODO: Configure network properly
             _network = env.IsDevelopment() ? Network.RegTest : Network.Main;
@@ -45,7 +45,8 @@ namespace LNbank.Services.Wallets
 
         public async Task<IEnumerable<Wallet>> GetWallets(WalletsQuery query)
         {
-            var queryable = _dbContext.Wallets.Where(w => w.UserId == query.UserId);
+            await using var dbContext = _dbContextFactory.CreateDbContext();
+            var queryable = dbContext.Wallets.Where(w => w.UserId == query.UserId);
 
             if (query.IncludeTransactions)
             {
@@ -57,7 +58,8 @@ namespace LNbank.Services.Wallets
 
         public async Task<Wallet> GetWallet(WalletQuery query)
         {
-            var queryable = _dbContext.Wallets
+            await using var dbContext = _dbContextFactory.CreateDbContext();
+            var queryable = dbContext.Wallets
                 .Where(w => w.UserId == query.UserId && w.WalletId == query.WalletId);
 
             if (query.IncludeTransactions)
@@ -73,6 +75,7 @@ namespace LNbank.Services.Wallets
 
         public async Task<Transaction> Receive(Wallet wallet, long amount, string description, TimeSpan expiry)
         {
+            await using var dbContext = _dbContextFactory.CreateDbContext();
             if (amount <= 0) throw new ArgumentException(nameof(amount));
 
             var data = await _btcpayService.CreateLightningInvoice(new LightningInvoiceCreateRequest
@@ -83,7 +86,7 @@ namespace LNbank.Services.Wallets
                 Expiry = expiry
             });
 
-            var entry = await _dbContext.Transactions.AddAsync(new Transaction
+            var entry = await dbContext.Transactions.AddAsync(new Transaction
             {
                 WalletId = wallet.WalletId,
                 InvoiceId = data.Id,
@@ -92,13 +95,14 @@ namespace LNbank.Services.Wallets
                 PaymentRequest = data.BOLT11,
                 Description = description
             });
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
 
             return entry.Entity;
         }
 
         public async Task<Transaction> Send(Wallet wallet, BOLT11PaymentRequest bolt11, string paymentRequest)
         {
+            await using var dbContext = _dbContextFactory.CreateDbContext();
             var amount = bolt11.MinimumAmount;
 
             if (bolt11.ExpiryDate <= DateTimeOffset.UtcNow)
@@ -145,9 +149,9 @@ namespace LNbank.Services.Wallets
             }
 
             // https://docs.microsoft.com/en-us/ef/core/saving/transactions#controlling-transactions
-            await using var dbTransaction = await _dbContext.Database.BeginTransactionAsync();
+            await using var dbTransaction = await dbContext.Database.BeginTransactionAsync();
             var now = DateTimeOffset.UtcNow;
-            var entry = await _dbContext.Transactions.AddAsync(new Transaction
+            var entry = await dbContext.Transactions.AddAsync(new Transaction
             {
                 WalletId = wallet.WalletId,
                 PaymentRequest = paymentRequest,
@@ -157,7 +161,7 @@ namespace LNbank.Services.Wallets
                 Description = bolt11.ShortDescription,
                 PaidAt = now
             });
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
 
             if (internalReceivingTransaction != null)
             {
@@ -170,31 +174,34 @@ namespace LNbank.Services.Wallets
 
         public async Task<Wallet> AddOrUpdateWallet(Wallet wallet)
         {
+            await using var dbContext = _dbContextFactory.CreateDbContext();
             EntityEntry<Wallet> entry;
 
             if (string.IsNullOrEmpty(wallet.WalletId))
             {
-                entry = _dbContext.Wallets.Add(wallet);
+                entry = dbContext.Wallets.Add(wallet);
             }
             else
             {
-                entry = _dbContext.Entry(wallet);
+                entry = dbContext.Entry(wallet);
                 entry.State = EntityState.Modified;
             }
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
 
             return entry.Entity;
         }
 
         public async Task RemoveWallet(Wallet wallet)
         {
-            _dbContext.Wallets.Remove(wallet);
-            await _dbContext.SaveChangesAsync();
+            await using var dbContext = _dbContextFactory.CreateDbContext();
+            dbContext.Wallets.Remove(wallet);
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Transaction>> GetTransactions(TransactionsQuery query)
         {
-            var queryable = _dbContext.Transactions.AsQueryable();
+            await using var dbContext = _dbContextFactory.CreateDbContext();
+            var queryable = dbContext.Transactions.AsQueryable();
 
             if (query.UserId != null) query.IncludeWallet = true;
 
@@ -251,7 +258,8 @@ namespace LNbank.Services.Wallets
 
         public async Task<Transaction> GetTransaction(TransactionQuery query)
         {
-            IQueryable<Transaction> queryable = _dbContext.Transactions.AsQueryable();
+            await using var dbContext = _dbContextFactory.CreateDbContext();
+            IQueryable<Transaction> queryable = dbContext.Transactions.AsQueryable();
 
             if (query.WalletId != null)
             {
@@ -294,18 +302,20 @@ namespace LNbank.Services.Wallets
 
         public async Task<Transaction> UpdateTransaction(Transaction transaction)
         {
-            var entry = _dbContext.Entry(transaction);
+            await using var dbContext = _dbContextFactory.CreateDbContext();
+            var entry = dbContext.Entry(transaction);
             entry.State = EntityState.Modified;
 
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
 
             return entry.Entity;
         }
 
         public async Task RemoveTransaction(Transaction transaction)
         {
-            _dbContext.Transactions.Remove(transaction);
-            await _dbContext.SaveChangesAsync();
+            await using var dbContext = _dbContextFactory.CreateDbContext();
+            dbContext.Transactions.Remove(transaction);
+            await dbContext.SaveChangesAsync();
         }
 
         public BOLT11PaymentRequest ParsePaymentRequest(string payReq)
@@ -331,16 +341,6 @@ namespace LNbank.Services.Wallets
                 transaction.IsExpired,
                 Event = "paid"
             });
-        }
-
-        public async ValueTask DisposeAsync()
-        {
-            await _dbContext.DisposeAsync();
-        }
-
-        public void Dispose()
-        {
-            _dbContext.Dispose();
         }
     }
 }
