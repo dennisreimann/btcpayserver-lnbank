@@ -2,6 +2,10 @@
     Layout = "_LayoutBase.cshtml";
 }
 
+@section Styles {
+    @RenderSection("Styles", false)
+}
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     @RenderSection("Scripts", false)

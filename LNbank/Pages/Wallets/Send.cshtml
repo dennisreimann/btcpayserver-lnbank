@@ -7,9 +7,9 @@
 }
 
 <header class="mb-3">
-    <h1 class="d-inline-block mr-2">
+    <h1 class="d-inline-block me-2">
         @ViewData["Title"]
-        <span class="badge badge-info d-inline-block ml-2">@Model.Wallet.Balance.ToUnit(LightMoneyUnit.Satoshi) sats</span>
+        <span class="badge bg-info d-inline-block ms-2 p-2">@Model.Wallet.Balance.ToUnit(LightMoneyUnit.Satoshi) sats</span>
     </h1>
 </header>
 
@@ -31,7 +31,7 @@
             @if (Model.Bolt11 == null)
             {
                 <div class="form-group">
-                    <label asp-for="PaymentRequest" class="control-label"></label>
+                    <label asp-for="PaymentRequest" class="form-label"></label>
                     <textarea asp-for="PaymentRequest" class="form-control" rows="5"></textarea>
                     <small asp-validation-for="PaymentRequest" class="form-text text-danger"></small>
                 </div>

@@ -17,7 +17,7 @@ a.navbar-brand {
 }
 
 a.navbar-brand img {
-  height: 45px;
+  height: 34px;
   margin-right: var(--btcpay-space-s);
 }
 
@@ -71,34 +71,39 @@ main p {
   padding: .5rem;
 }
 
-.navbar-nav > li.nav-item .nav-link,
-.navbar-nav > li.nav-item .nav-link .btn {
-  font-size: 13px;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: var(--btcpay-header-color-link, var(--btcpay-color-neutral-100));
-}
-
-.navbar-nav > li.nav-item .nav-link {
-  border: 2px solid transparent;
-}
-
-.navbar-nav > li.nav-item .nav-link:focus,
-.navbar-nav > li.nav-item .nav-link:hover {
-  color: var(--btcpay-header-color-link-accent, var(--btcpay-color-white));
-}
-
-.navbar-nav > li.nav-item .nav-link.active,
-.navbar-nav > li.nav-item .nav-link.active:focus,
-.navbar-nav > li.nav-item .nav-link.active:hover {
-  color: var(--btcpay-header-color-link-active, var(--btcpay-color-white));
+#mainNav {
+    color: var(--btcpay-header-text);
+    background: var(--btcpay-header-bg);
+    transition-property: background, color;
+    transition-duration: 0.2s;
 }
 
 @media (min-width: 992px) {
-  .navbar-nav > li.nav-item .nav-link:focus,
-  .navbar-nav > li.nav-item .nav-link:hover {
-    border-bottom-color: var(--btcpay-header-color-link-accent);
-  }
+    #mainNav {
+        background: transparent;
+    }
+
+    #mainNav.navbar-shrink {
+        background: var(--btcpay-header-bg);
+    }
+}
+
+#mainNav .navbar-nav > li.nav-item > .nav-link,
+#mainNav .navbar-nav > li.nav-item .nav-link.btn {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--btcpay-header-link);
+}
+
+#mainNav .navbar-nav > li.nav-item > .nav-link:focus,
+#mainNav .navbar-nav > li.nav-item > .nav-link:hover {
+    color: var(--btcpay-header-link-accent);
+}
+
+#mainNav .navbar-nav > li.nav-item > .nav-link.active,
+#mainNav .navbar-nav > li.nav-item > .nav-link.active:focus,
+#mainNav .navbar-nav > li.nav-item > .nav-link.active:hover {
+    color: var(--btcpay-header-link-active);
 }
 
 small, .small {

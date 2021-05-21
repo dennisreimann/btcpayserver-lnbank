@@ -6,16 +6,16 @@
     <fieldset class="mb-4">
         <legend>Application</legend>
         <div class="form-group">
-            <label asp-for="App.Name" class="control-label"></label>
+            <label asp-for="App.Name" class="form-label"></label>
             <input asp-for="App.Name" class="form-control" />
             <small asp-validation-for="App.Name" class="form-text text-danger"></small>
         </div>
     </fieldset>
 
-    <fieldset class="mb-4">
+    <fieldset class="mb-2">
         <legend>BTCPay Server</legend>
         <div class="form-group">
-            <label asp-for="BtcPay.Endpoint" class="control-label"></label>
+            <label asp-for="BtcPay.Endpoint" class="form-label"></label>
             <input asp-for="BtcPay.Endpoint" class="form-control" plaseholder/>
             <small asp-validation-for="BtcPay.Endpoint" class="form-text text-danger"></small>
             <small class="form-text text-muted">
@@ -31,7 +31,7 @@
             your stores" and your store as permission.
         </p>
         <div class="form-group">
-            <label asp-for="BtcPay.StoreId" class="control-label"></label>
+            <label asp-for="BtcPay.StoreId" class="form-label"></label>
             <input asp-for="BtcPay.StoreId" class="form-control" />
             <small asp-validation-for="BtcPay.StoreId" class="form-text text-danger"></small>
             <small class="form-text text-muted">
@@ -39,7 +39,7 @@
             </small>
         </div>
         <div class="form-group">
-            <label asp-for="BtcPay.ApiKey" class="control-label"></label>
+            <label asp-for="BtcPay.ApiKey" class="form-label"></label>
             <input asp-for="BtcPay.ApiKey" class="form-control" />
             <small asp-validation-for="BtcPay.ApiKey" class="form-text text-danger"></small>
         </div>
